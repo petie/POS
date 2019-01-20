@@ -18,7 +18,7 @@ namespace POS.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
 
-            modelBuilder.Entity("POC.Models.PaymentInfo", b =>
+            modelBuilder.Entity("POS.Models.PaymentInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -43,7 +43,7 @@ namespace POS.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("POC.Models.Product", b =>
+            modelBuilder.Entity("POS.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -65,7 +65,7 @@ namespace POS.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("POC.Models.Receipt", b =>
+            modelBuilder.Entity("POS.Models.Receipt", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -87,7 +87,7 @@ namespace POS.Migrations
                     b.ToTable("Receipts");
                 });
 
-            modelBuilder.Entity("POC.Models.ReceiptItem", b =>
+            modelBuilder.Entity("POS.Models.ReceiptItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -117,7 +117,7 @@ namespace POS.Migrations
                     b.ToTable("ReceiptItems");
                 });
 
-            modelBuilder.Entity("POC.Models.Shift", b =>
+            modelBuilder.Entity("POS.Models.Shift", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -143,7 +143,7 @@ namespace POS.Migrations
                     b.ToTable("Shifts");
                 });
 
-            modelBuilder.Entity("POC.Models.Tax", b =>
+            modelBuilder.Entity("POS.Models.Tax", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -159,38 +159,38 @@ namespace POS.Migrations
                     b.ToTable("Tax");
                 });
 
-            modelBuilder.Entity("POC.Models.PaymentInfo", b =>
+            modelBuilder.Entity("POS.Models.PaymentInfo", b =>
                 {
-                    b.HasOne("POC.Models.Receipt", "Receipt")
+                    b.HasOne("POS.Models.Receipt", "Receipt")
                         .WithOne("Payment")
-                        .HasForeignKey("POC.Models.PaymentInfo", "ReceiptId")
+                        .HasForeignKey("POS.Models.PaymentInfo", "ReceiptId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("POC.Models.Product", b =>
+            modelBuilder.Entity("POS.Models.Product", b =>
                 {
-                    b.HasOne("POC.Models.Tax", "Tax")
+                    b.HasOne("POS.Models.Tax", "Tax")
                         .WithMany()
                         .HasForeignKey("TaxId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("POC.Models.Receipt", b =>
+            modelBuilder.Entity("POS.Models.Receipt", b =>
                 {
-                    b.HasOne("POC.Models.Shift", "Shift")
+                    b.HasOne("POS.Models.Shift", "Shift")
                         .WithMany("Receipts")
                         .HasForeignKey("ShiftId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("POC.Models.ReceiptItem", b =>
+            modelBuilder.Entity("POS.Models.ReceiptItem", b =>
                 {
-                    b.HasOne("POC.Models.Product", "Product")
+                    b.HasOne("POS.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("POC.Models.Receipt", "Receipt")
+                    b.HasOne("POS.Models.Receipt", "Receipt")
                         .WithMany("Items")
                         .HasForeignKey("ReceiptId")
                         .OnDelete(DeleteBehavior.Cascade);

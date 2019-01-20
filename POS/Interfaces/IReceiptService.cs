@@ -9,9 +9,12 @@ namespace POS.Interfaces
 {
     public interface IReceiptService
     {
-        ActionResult<int> Create();
-        ActionResult<bool> Add(ReceiptItem receiptItem);
-        ActionResult<bool> Remove(int receiptItemId);
-        ActionResult<bool> Delete(int receiptId);
+        int Create();
+        ReceiptItem Add(string ean);
+        bool Remove(int receiptItemId);
+        bool Delete(int receiptId);
+        Receipt GetCurrentReceipt();
+        PaymentInfo GetByReceiptId(int receiptId);
+        ReceiptItem ChangeQuantity(int receiptItemId, decimal quantity);
     }
 }

@@ -7,15 +7,35 @@ namespace POS.Models
 {
     public class Shift
     {
-        public int Id { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public decimal StartMoney { get; set; }
-        public decimal StartDeposit { get; set; }
-        public decimal NumberOfReceipts { get; set; }
-        public bool IsClosed { get; set; }
-        public int CancelledReceiptsCount { get; set; }
-        public int RemovedItemsCount { get; set; }
-        public IEnumerable<Receipt> Receipts { get; set; }
+        public int Id { get; private set; }
+        public DateTime? StartDate { get; private set; }
+        public DateTime? EndDate { get; private set; }
+        public decimal StartMoney { get; internal set; }
+        public decimal StartDeposit { get; private set; }
+        public decimal NumberOfReceipts => Receipts.Count(r => !r.IsCancelled);
+        public bool IsClosed { get { return EndDate != null; } }
+        public bool IsOpen { get { return StartDate != null && !IsClosed; } }
+        public int CancelledReceiptsCount => Receipts.Count(r => r.IsCancelled);
+        public int RemovedItemsCount => Receipts.Sum(r => r.Items.Count(i => i.IsRemoved));
+        public IEnumerable<Receipt> Receipts { get; private set; }
+        public decimal EndMoney => StartMoney + StartDeposit + Receipts.Sum(r => r.Total);
+
+        public Shift(decimal startMoney)
+        {
+            StartDate = DateTime.Now;
+            StartMoney = startMoney;
+        }
+
+        internal void Close()
+        {
+            EndDate = DateTime.Now;
+        }
+
+        internal void Start(decimal paymentAmount)
+        {
+            StartDeposit = paymentAmount;
+            StartDate = DateTime.Now;
+
+        }
     }
 }

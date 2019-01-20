@@ -26,6 +26,11 @@ namespace POS.DataAccess
             return context.Products.ToList();
         }
 
+        public Product GetByEan(string ean)
+        {
+            return context.Products.SingleOrDefault(p => p.Ean == ean);
+        }
+
         public List<Product> Search(string eanCode)
         {
             return context.Products.Where(p => p.Ean == eanCode).ToList();

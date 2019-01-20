@@ -21,7 +21,17 @@ namespace POS.Controllers
         }
         public ActionResult<PaymentInfo> Get(int receiptId)
         {
-            return _paymentService.Get(receiptId);
+            return Ok(_paymentService.Get(receiptId));
+        }
+
+        public ActionResult<PaymentInfo> Create()
+        {
+            return Ok(_paymentService.Create());
+        }
+
+        public ActionResult<PaymentInfo> PayAmount([FromBody] PaymentPayload payment)
+        {
+            return Ok(_paymentService.PayAmount(payment));
         }
     }
 }

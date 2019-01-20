@@ -8,5 +8,6 @@ namespace POS.Interfaces
         List<Product> Search(string eanCode);
         List<Product> GetAll();
         Product Get(int productId);
+        Product GetByEan(string ean);
     }
 }

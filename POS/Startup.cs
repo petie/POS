@@ -36,6 +36,7 @@ namespace POS
 
             services.AddDbContext<PosDbContext>(options => options.UseSqlite("Data Source=Database\\pos.db"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddOpenApiDocument();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +54,9 @@ namespace POS
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseCors();
+            app.UseSwagger();
+            app.UseSwaggerUi3();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

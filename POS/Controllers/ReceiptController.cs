@@ -25,9 +25,9 @@ namespace POS.Controllers
             return _receiptService.Create();
         }
 
-        public ActionResult<bool> Add([FromBody] ReceiptItem receiptItem)
+        public ActionResult<ReceiptItem> Add(string ean)
         {
-            return _receiptService.Add(receiptItem);
+            return _receiptService.Add(ean);
         }
 
         public ActionResult<bool> Remove(int receiptItemId)
@@ -38,6 +38,11 @@ namespace POS.Controllers
         public ActionResult<bool> Delete(int receiptId)
         {
             return _receiptService.Delete(receiptId);
+        }
+
+        public ActionResult<ReceiptItem> ChangeQuantity([FromBody] ChangeQuantityRequest request)
+        {
+            return _receiptService.ChangeQuantity(request.Id, request.Quantity);
         }
     }
 }
