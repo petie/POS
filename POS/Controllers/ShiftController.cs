@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using POS.Interfaces;
 using POS.Models;
 
@@ -19,24 +14,30 @@ namespace POS.Controllers
         {
             this.shiftService = shiftService;
         }
+        [HttpPost]
         public ActionResult<Shift> Create()
         {
             return shiftService.Create();
         }
-
+        [HttpPost("start")]
         public ActionResult<Shift> Start(ShiftStartPayload shiftStartPayload)
         {
             return shiftService.Start(shiftStartPayload.DepositAmount, shiftStartPayload.ShiftId);
         }
-
+        [HttpPost("close")]
         public ActionResult<Shift> Close()
         {
             return shiftService.End();
         }
 
+        [HttpGet]
         public ActionResult<Shift> GetCurrent()
         {
-            return shiftService.GetCurrent();
+            var result = shiftService.GetCurrent();
+            if (result == null)
+                return NotFound();
+            else
+                return Ok(result);
         }
     }
 }

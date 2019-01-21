@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using POS.Interfaces;
 using POS.Models;
 
@@ -17,18 +12,25 @@ namespace POS.Controllers
 
         public PaymentController(IPaymentService paymentService)
         {
-            this._paymentService = paymentService;
+            _paymentService = paymentService;
         }
+        [HttpGet("{receiptId}")]
         public ActionResult<PaymentInfo> Get(int receiptId)
         {
-            return Ok(_paymentService.Get(receiptId));
+            var result = _paymentService.Get(receiptId);
+            if (result == null)
+                return NotFound();
+            else
+                return Ok(result);
         }
 
+        [HttpPost]
         public ActionResult<PaymentInfo> Create()
         {
             return Ok(_paymentService.Create());
         }
 
+        [HttpPost("pay")]
         public ActionResult<PaymentInfo> PayAmount([FromBody] PaymentPayload payment)
         {
             return Ok(_paymentService.PayAmount(payment));

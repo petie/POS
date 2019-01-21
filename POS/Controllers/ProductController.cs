@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using POS.Interfaces;
 using POS.Models;
@@ -16,18 +13,29 @@ namespace POS.Controllers
 
         public ProductController(IProductService productService)
         {
-            this._productService = productService;
+            _productService = productService;
         }
+        [HttpGet("ean/{eanCode}")]
         public ActionResult<List<Product>> SearchProduct(string eanCode)
         {
-            return Ok(_productService.Search(eanCode));
+            var result = _productService.Search(eanCode);
+            if (result == null)
+                return NotFound();
+            else
+                return Ok(result);
         }
 
+        [HttpGet("{productId}")]
         public ActionResult<Product> GetProduct(int productId)
         {
-            return Ok(_productService.Get(productId));
+            var result = _productService.Get(productId);
+            if (result == null)
+                return NotFound();
+            else
+                return Ok(result);
         }
 
+        [HttpGet]
         public ActionResult<List<Product>> GetAll()
         {
             return Ok(_productService.GetAll());
