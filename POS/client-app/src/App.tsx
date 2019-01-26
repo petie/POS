@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import MainView from './Components/MainView';
-import { createStyles, Theme, withStyles, AppBar } from '@material-ui/core';
+import { createStyles, Theme, withStyles } from '@material-ui/core';
 import './fonts.css';
 import './App.css';
+import { Provider } from 'react-redux';
+import initStore from './Stores/AppStore';
+
+const store = initStore();
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -15,9 +19,11 @@ class App extends Component<any, any> {
     const { classes } = this.props;
     return (
         <div className={classes.root}>
+        <Provider store={store}>
             <Router>
                 <Route path="/" component={MainView} />
             </Router>
+            </Provider>
       </div>
     );
   }

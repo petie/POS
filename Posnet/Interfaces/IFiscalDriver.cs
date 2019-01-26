@@ -67,15 +67,9 @@ namespace Posnet
 
         bool SupportsPayments { get; }
 
-        string Config { get; set; }
-
         List<PosnetProperty> Properties { get; }
 
         string AvailableValues(string name);
-
-        void SetValue(string name, string value);
-
-        string GetValue(string name);
 
         bool SupportsFeature(DriverIdentifier df);
 

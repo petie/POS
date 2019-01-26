@@ -35,6 +35,9 @@ const styles = (theme: Theme) =>
   });
 
 class MainView extends React.Component<any, any> {
+  componentDidMount(){
+    
+  }
   render() {
     const { classes } = this.props;
     return (
@@ -56,7 +59,7 @@ class MainView extends React.Component<any, any> {
           <Paper className={classes.paper}>
             <BottomMenu />
           </Paper>
-          <TillManagement open={false} startShift={false}/>
+          <TillManagement />
         </div>
       </div>
     );

@@ -7,11 +7,10 @@ using System.IO.Ports;
 
 namespace Posnet
 {
-    internal class PosnetDriverPosnetProtocol : IFiscalDriver, IDisposable, IFiscalDriverProperties
+    public class PosnetDriverPosnetProtocol : IFiscalDriver, IDisposable, IFiscalDriverProperties
     {
         private static byte STX = 2;
         private static byte EXT = 3;
-        private Dictionary<string, string> settings = new Dictionary<string, string>();
         private int standardTimeout = 5000;
         private string TAB = new string('\t', 1);
         private List<KeyValuePair<int, string>> FooterLines = new List<KeyValuePair<int, string>>();
@@ -34,12 +33,13 @@ namespace Posnet
         private Dictionary<int, long> payments;
         private int NonFiscalPrintId;
         private bool communicationLog;
+        private readonly PosnetSettings settings;
 
-        public PosnetDriverPosnetProtocol(string name)
+        public PosnetDriverPosnetProtocol(PosnetSettings settings)
         {
             id = new Random().Next();
             Trace.WriteLine(id.ToString() + " - PosnetDriver");
-            Name = name;
+            Name = settings.Name;
             OperatorId = "";
             mazoviaCode = new Dictionary<char, byte>();
             for (int index = 0; index < sbyte.MaxValue; ++index)
@@ -70,6 +70,7 @@ namespace Posnet
             mazoviaCode.Add('Ü', 154);
             mazoviaCode.Add('Ä', 142);
             mazoviaCode.Add('Ö', 153);
+            this.settings = settings;
         }
 
         private void AddOptionalCommandParameter(ref string Parameters, string ParameterId, string ParameterValue)
@@ -285,31 +286,10 @@ namespace Posnet
                         port.Close();
                     port.Dispose();
                 }
-                port = new PosnetSerialPort(Name, settings["port"], int.Parse(settings["baudrate"]));
+                port = new PosnetSerialPort(Name, settings.Port, settings.BaudRate);
                 port.ReadTimeout = standardTimeout;
                 port.WriteTimeout = standardTimeout;
-                if (settings.ContainsKey("handshake"))
-                {
-                    switch (settings["handshake"])
-                    {
-                        case "XOnXOff":
-                            port.Handshake = Handshake.XOnXOff;
-                            break;
-                        case "RequestToSend":
-                            port.Handshake = Handshake.RequestToSend;
-                            break;
-                        case "RequestToSendXOnXOff":
-                            port.Handshake = Handshake.RequestToSendXOnXOff;
-                            break;
-                        case "None":
-                            port.Handshake = Handshake.None;
-                            break;
-                        case "System":
-                            break;
-                        default:
-                            throw new PosnetException("Niepoprawne ustawienie portu COM: Handshake");
-                    }
-                }
+                port.Handshake = settings.Handshake;
                 port.Open();
             }
             catch (UnauthorizedAccessException ex)
@@ -1021,30 +1001,6 @@ namespace Posnet
             }
         }
 
-        public string Config
-        {
-            get
-            {
-                Trace.WriteLine(id.ToString() + " - get_Config");
-                string str = "";
-                foreach (KeyValuePair<string, string> setting in settings)
-                    str = str + setting.Key + "=" + setting.Value + ",";
-                if (str.EndsWith(","))
-                    str = str.Substring(0, str.Length - 1);
-                return str;
-            }
-            set
-            {
-                Trace.WriteLine(id.ToString() + " - set_Config");
-                settings.Clear();
-                foreach (string str in value.Split(",;".ToCharArray()))
-                {
-                    if (str.Split("=".ToCharArray()).Length == 2)
-                        settings.Add(str.Split("=".ToCharArray())[0], str.Split("=".ToCharArray())[1]);
-                }
-            }
-        }
-
         public List<PosnetProperty> Properties
         {
             get
@@ -1077,24 +1033,6 @@ namespace Posnet
                 default:
                     throw new FiscalException("Właściwość nie jest obsługiwana przez sterownik");
             }
-        }
-
-        public void SetValue(string name, string value)
-        {
-            if (settings.ContainsKey(name))
-                settings[name] = value;
-            else
-                settings.Add(name, value);
-            if (value != null)
-                return;
-            settings.Remove(name);
-        }
-
-        public string GetValue(string name)
-        {
-            if (settings.ContainsKey(name))
-                return settings[name];
-            return GetDefaultValue(name);
         }
 
         public bool SupportsFeature(DriverIdentifier df)
