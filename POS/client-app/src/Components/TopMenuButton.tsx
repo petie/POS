@@ -3,6 +3,7 @@ import React from "react";
 
 type TopMenuButtonProps = WithStyles & {
     text: string;
+    onClick?: (event:any) => void;
 }
 const styles = (theme: Theme) => createStyles({
     button: {
@@ -21,6 +22,7 @@ class TopMenuButton extends React.Component<TopMenuButtonProps> {
           variant="outlined"
           size="large"
           className={classes.button}
+          onClick={this.props.onClick}
         >
           <Grid container>
             <Grid item md={12}>

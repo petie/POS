@@ -28,9 +28,9 @@ namespace POS.Controllers
         }
 
         [HttpDelete("receiptItem/{receiptItemId}")]
-        public ActionResult<bool> Remove(int receiptItemId)
+        public ActionResult<bool> Remove(int receiptId, int receiptItemId)
         {
-            return _receiptService.Remove(receiptItemId);
+            return _receiptService.Remove(receiptId, receiptItemId);
         }
 
         [HttpDelete("{receiptId}")]

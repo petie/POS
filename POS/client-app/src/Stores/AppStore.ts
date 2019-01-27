@@ -1,10 +1,12 @@
 import { Store, createStore, applyMiddleware, compose } from "redux";
 import {AppState} from "../State/AppState";
+import promiseMiddleware from 'redux-promise-middleware';
 import thunk from 'redux-thunk';
 import rootReducer, { IRootState } from "../Reducers/Index";
 
 const defaultMiddlewares = [
-    thunk
+    thunk,
+    promiseMiddleware()
   ];
 
 const composedMiddlewares = (middlewares: any) =>
