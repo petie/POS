@@ -1,6 +1,6 @@
 ﻿using POS.Models;
 
-namespace POS.Interfaces
+namespace POS.Services
 {
     public class ReceiptService : IReceiptService
     {
@@ -51,9 +51,10 @@ namespace POS.Interfaces
             return receiptRepository.GetCurrent();
         }
 
-        public bool Remove(int receiptItemId)
+        public bool Remove(int receiptId, int receiptItemId)
         {
-            Receipt receipt = receiptRepository.FindByReceiptItemId(receiptItemId);
+
+            Receipt receipt = receiptRepository.Get(receiptId);
             return receipt.RemoveItem(receiptItemId) && receiptRepository.Save(receipt);
         }
     }

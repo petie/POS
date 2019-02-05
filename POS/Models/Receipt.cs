@@ -1,11 +1,19 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace POS.Models
 {
     public class Receipt
     {
+        public Receipt()
+        {
+            Items = new List<ReceiptItem>();
+        }
+
         public Receipt(Shift shift)
         {
             Shift = shift;
@@ -14,13 +22,27 @@ namespace POS.Models
             DateCreated = DateTime.Now;
             DateModified = DateTime.Now;
         }
+
+        /// <summary>
+        /// Constructor used for testing
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="shift"></param>
+        public Receipt(int id, Shift shift) : this(shift)
+        {
+            Id = id;
+        }
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public List<ReceiptItem> Items { get; set; }
 
-        internal int GetNextOrdinalNumber() => Items.Count + 1;
+        internal int GetNextOrdinalNumber() => 1 + Items?.Count ?? 0;
 
         public PaymentInfo Payment { get; set; }
         public int ShiftId { get; set; }
+        [JsonIgnore]
         public Shift Shift { get; set; }
         public bool IsCancelled { get; set; }
         public bool IsClosed { get; set; }

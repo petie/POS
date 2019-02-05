@@ -1,7 +1,8 @@
-﻿using POS.Interfaces;
+﻿using POS.Services;
 using POS.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace POS.DataAccess
 {
@@ -16,22 +17,22 @@ namespace POS.DataAccess
 
         public Product Get(int productId)
         {
-            return context.Products.Find(productId);
+            return context.Products.Include(p => p.Tax).SingleOrDefault(p =>  p.Id == productId);
         }
 
         public List<Product> GetAll()
         {
-            return context.Products.ToList();
+            return context.Products.Include(p => p.Tax).ToList();
         }
 
         public Product GetByEan(string ean)
         {
-            return context.Products.SingleOrDefault(p => p.Ean == ean);
+            return context.Products.Include(p => p.Tax).SingleOrDefault(p => p.Ean == ean);
         }
 
         public List<Product> Search(string eanCode)
         {
-            return context.Products.Where(p => p.Ean == eanCode).ToList();
+            return context.Products.Include(p => p.Tax).Where(p => p.Ean == eanCode).ToList();
         }
     }
 }

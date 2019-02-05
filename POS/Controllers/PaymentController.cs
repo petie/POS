@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using POS.Interfaces;
+using POS.Services;
 using POS.Models;
+using System.ComponentModel;
 
 namespace POS.Controllers
 {
@@ -15,6 +16,7 @@ namespace POS.Controllers
             _paymentService = paymentService;
         }
         [HttpGet("{receiptId}")]
+        [Description("Get payment summary for a given receipt")]
         public ActionResult<PaymentInfo> Get(int receiptId)
         {
             var result = _paymentService.Get(receiptId);
@@ -25,12 +27,14 @@ namespace POS.Controllers
         }
 
         [HttpPost]
+        [Description("Create an empty payment object for the current receipt")]
         public ActionResult<PaymentInfo> Create()
         {
             return Ok(_paymentService.Create());
         }
 
         [HttpPost("pay")]
+        [Description("Confirm payment of receipt")]
         public ActionResult<PaymentInfo> PayAmount([FromBody] PaymentPayload payment)
         {
             return Ok(_paymentService.PayAmount(payment));

@@ -1,6 +1,7 @@
-﻿using POS.Interfaces;
+﻿using POS.Services;
 using POS.Models;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace POS.DataAccess
 {
@@ -26,17 +27,17 @@ namespace POS.DataAccess
 
         public Receipt FindByReceiptItemId(int receiptItemId)
         {
-            return context.ReceiptItems.Find(receiptItemId).Receipt;
+            return context.ReceiptItems.Include(r => r.Receipt).SingleOrDefault(r => r.Id == receiptItemId)?.Receipt;
         }
 
         public Receipt Get(int receiptId)
         {
-            return context.Receipts.Find(receiptId);
+            return context.Receipts.Include(r => r.Items).SingleOrDefault(r => r.Id == receiptId);
         }
 
         public Receipt GetCurrent()
         {
-            return context.Receipts.SingleOrDefault(c => !c.IsClosed);
+            return context.Receipts.Include(r => r.Items).SingleOrDefault(c => !c.IsClosed);
         }
 
         public bool Save(Receipt receipt)

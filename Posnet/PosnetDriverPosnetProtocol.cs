@@ -112,6 +112,7 @@ namespace Posnet
             try
             {
                 string str = !string.IsNullOrEmpty(Parameters) ? PrinterCommand + TAB + Parameters : PrinterCommand;
+                Trace.WriteLine("Send Frame = " + str);
                 byte[] mazovia = stringToMazovia(str + TAB + "#");
                 byte[] numArray = new byte[1]
                 {

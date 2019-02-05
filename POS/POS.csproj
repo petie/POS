@@ -4,6 +4,12 @@
     <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Migrations\20190117224803_Initial.cs" />
+    <Compile Remove="Migrations\20190117224803_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20190202135024_AutoKeys.cs" />
+    <Compile Remove="Migrations\20190202135024_AutoKeys.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="ElectronNET.API" Version="0.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
@@ -23,5 +29,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Database\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Posnet\Posnet.csproj" />
   </ItemGroup>
 </Project>

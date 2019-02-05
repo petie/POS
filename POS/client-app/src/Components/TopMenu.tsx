@@ -47,13 +47,13 @@ class TopMenu extends React.Component<any, TopMenuState> {
     this.props.removeReceiptItem(this.props.receiptId, this.state.selectedItemId)
   }
   handleCancelRecceipt = (event: any) => {
-
+    this.props.cancelReceipt(this.props.receiptId);
   }
   handleCloseShift = (event: any) => {
-
+    this.props.closeShift();
   }
   handleOpenShift = (event: any) => {
-
+    this.props.openShift();
   }
   render() {
     const { classes } = this.props;

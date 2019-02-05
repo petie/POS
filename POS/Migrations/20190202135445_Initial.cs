@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace POS.Migrations
@@ -12,15 +13,11 @@ namespace POS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    StartDate = table.Column<DateTime>(nullable: false),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    StartDate = table.Column<DateTime>(nullable: true),
                     EndDate = table.Column<DateTime>(nullable: true),
                     StartMoney = table.Column<decimal>(nullable: false),
-                    StartDeposit = table.Column<decimal>(nullable: false),
-                    NumberOfReceipts = table.Column<decimal>(nullable: false),
-                    IsClosed = table.Column<bool>(nullable: false),
-                    CancelledReceiptsCount = table.Column<int>(nullable: false),
-                    RemovedItemsCount = table.Column<int>(nullable: false)
+                    StartDeposit = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +29,7 @@ namespace POS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Symbol = table.Column<string>(nullable: true),
                     FiscalSymbol = table.Column<string>(nullable: true),
                     Value = table.Column<decimal>(nullable: false)
@@ -47,10 +44,10 @@ namespace POS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ShiftId = table.Column<int>(nullable: false),
                     IsCancelled = table.Column<bool>(nullable: false),
-                    Total = table.Column<decimal>(nullable: false),
+                    IsClosed = table.Column<bool>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     DateModified = table.Column<DateTime>(nullable: false)
                 },
@@ -70,7 +67,7 @@ namespace POS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Ean = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Price = table.Column<decimal>(nullable: false),
@@ -93,13 +90,14 @@ namespace POS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Amount = table.Column<decimal>(nullable: false),
                     AmountPayed = table.Column<decimal>(nullable: false),
                     Change = table.Column<decimal>(nullable: false),
                     IsPayed = table.Column<bool>(nullable: false),
                     ReceiptId = table.Column<int>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false)
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    DateModified = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -117,11 +115,10 @@ namespace POS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrdinalNumber = table.Column<int>(nullable: false),
                     ProductId = table.Column<int>(nullable: false),
                     Quantity = table.Column<decimal>(nullable: false),
-                    Value = table.Column<decimal>(nullable: false),
                     IsRemoved = table.Column<bool>(nullable: false),
                     ReceiptId = table.Column<int>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
@@ -169,6 +166,23 @@ namespace POS.Migrations
                 name: "IX_Receipts_ShiftId",
                 table: "Receipts",
                 column: "ShiftId");
+
+            migrationBuilder.Sql(@"insert into POS.dbo.Tax  (Symbol, Value, FiscalSymbol) SELECT [DSSVAT_Stawka], [DSSVAT_Stawka], [DSSVAT_DFSymbol]
+                    FROM [CDN_BIOVERT].[CDN].[DetalStanStawkiVAT] where DSSVAT_DFSymbol <> '' and DSSVAT_StanDetalID = 1
+
+                    INSERT INTO Pos.[dbo].[Products]
+                            ([Ean]
+                            ,[Name]
+                            ,[Price]
+                            ,[Unit]
+                            ,[TaxId])
+                        SELECT [Twr_EAN]
+	                    ,[Twr_Nazwa]
+                        ,(select twc_wartosc from CDN_biovert.cdn.TwrCeny where TwC_TwCNumer = Twr_TwCNumer and twc_typ = 2 and TwC_TwrID = Twr_TwrId)
+	                    ,[Twr_JM]
+                        ,(select Id from pos.dbo.tax where value = [Twr_Stawka])
+                    FROM [CDN_BIOVERT].[CDN].[Towary] where Twr_NieAktywny = 0
+            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -1,6 +1,6 @@
 ﻿using POS.Models;
 
-namespace POS.Interfaces
+namespace POS.Services
 {
     public class PaymentService : IPaymentService
     {

@@ -1,14 +1,16 @@
 ﻿using POS.Models;
 
-namespace POS.Interfaces
+namespace POS.Services
 {
     public class ShiftService : IShiftService
     {
         private readonly IShiftRepository shiftRepository;
+        private readonly IFiscalGateway fiscalGateway;
 
-        public ShiftService(IShiftRepository shiftRepository)
+        public ShiftService(IShiftRepository shiftRepository, IFiscalGateway fiscalGateway)
         {
             this.shiftRepository = shiftRepository;
+            this.fiscalGateway = fiscalGateway;
         }
 
         public Shift Create()
@@ -17,7 +19,7 @@ namespace POS.Interfaces
             if (activeShift == null)
             {
                 Shift lastShift = shiftRepository.GetLast();
-                Shift shift = new Shift(lastShift.EndMoney);
+                Shift shift = new Shift(lastShift?.EndMoney ?? 0);
                 shiftRepository.Save(shift);
                 return shift;
             }
@@ -41,7 +43,8 @@ namespace POS.Interfaces
         {
             Shift shift = shiftRepository.Get(shiftId);
             shift.Start(paymentAmount);
-            shiftRepository.Save(shift);
+            shiftRepository.Update(shift);
+            fiscalGateway.Login();
             return shift;
         }
     }

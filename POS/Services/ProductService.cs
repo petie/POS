@@ -1,7 +1,7 @@
 ﻿using POS.Models;
 using System.Collections.Generic;
 
-namespace POS.Interfaces
+namespace POS.Services
 {
     public class ProductService : IProductService
     {

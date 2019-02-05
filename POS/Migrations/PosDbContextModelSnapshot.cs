@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using POS.DataAccess;
 
@@ -14,12 +15,15 @@ namespace POS.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("POC.Models.PaymentInfo", b =>
+            modelBuilder.Entity("POS.Models.PaymentInfo", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<decimal>("Amount");
 
@@ -28,6 +32,8 @@ namespace POS.Migrations
                     b.Property<decimal>("Change");
 
                     b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateModified");
 
                     b.Property<bool>("IsPayed");
 
@@ -41,10 +47,11 @@ namespace POS.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("POC.Models.Product", b =>
+            modelBuilder.Entity("POS.Models.Product", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Ean");
 
@@ -63,10 +70,11 @@ namespace POS.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("POC.Models.Receipt", b =>
+            modelBuilder.Entity("POS.Models.Receipt", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated");
 
@@ -74,9 +82,9 @@ namespace POS.Migrations
 
                     b.Property<bool>("IsCancelled");
 
-                    b.Property<int>("ShiftId");
+                    b.Property<bool>("IsClosed");
 
-                    b.Property<decimal>("Total");
+                    b.Property<int>("ShiftId");
 
                     b.HasKey("Id");
 
@@ -85,10 +93,11 @@ namespace POS.Migrations
                     b.ToTable("Receipts");
                 });
 
-            modelBuilder.Entity("POC.Models.ReceiptItem", b =>
+            modelBuilder.Entity("POS.Models.ReceiptItem", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated");
 
@@ -104,8 +113,6 @@ namespace POS.Migrations
 
                     b.Property<int>("ReceiptId");
 
-                    b.Property<decimal>("Value");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
@@ -115,22 +122,15 @@ namespace POS.Migrations
                     b.ToTable("ReceiptItems");
                 });
 
-            modelBuilder.Entity("POC.Models.Shift", b =>
+            modelBuilder.Entity("POS.Models.Shift", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("CancelledReceiptsCount");
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime?>("EndDate");
 
-                    b.Property<bool>("IsClosed");
-
-                    b.Property<decimal>("NumberOfReceipts");
-
-                    b.Property<int>("RemovedItemsCount");
-
-                    b.Property<DateTime>("StartDate");
+                    b.Property<DateTime?>("StartDate");
 
                     b.Property<decimal>("StartDeposit");
 
@@ -141,10 +141,11 @@ namespace POS.Migrations
                     b.ToTable("Shifts");
                 });
 
-            modelBuilder.Entity("POC.Models.Tax", b =>
+            modelBuilder.Entity("POS.Models.Tax", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FiscalSymbol");
 
@@ -157,38 +158,38 @@ namespace POS.Migrations
                     b.ToTable("Tax");
                 });
 
-            modelBuilder.Entity("POC.Models.PaymentInfo", b =>
+            modelBuilder.Entity("POS.Models.PaymentInfo", b =>
                 {
-                    b.HasOne("POC.Models.Receipt", "Receipt")
+                    b.HasOne("POS.Models.Receipt", "Receipt")
                         .WithOne("Payment")
-                        .HasForeignKey("POC.Models.PaymentInfo", "ReceiptId")
+                        .HasForeignKey("POS.Models.PaymentInfo", "ReceiptId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("POC.Models.Product", b =>
+            modelBuilder.Entity("POS.Models.Product", b =>
                 {
-                    b.HasOne("POC.Models.Tax", "Tax")
+                    b.HasOne("POS.Models.Tax", "Tax")
                         .WithMany()
                         .HasForeignKey("TaxId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("POC.Models.Receipt", b =>
+            modelBuilder.Entity("POS.Models.Receipt", b =>
                 {
-                    b.HasOne("POC.Models.Shift", "Shift")
+                    b.HasOne("POS.Models.Shift", "Shift")
                         .WithMany("Receipts")
                         .HasForeignKey("ShiftId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("POC.Models.ReceiptItem", b =>
+            modelBuilder.Entity("POS.Models.ReceiptItem", b =>
                 {
-                    b.HasOne("POC.Models.Product", "Product")
+                    b.HasOne("POS.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("POC.Models.Receipt", "Receipt")
+                    b.HasOne("POS.Models.Receipt", "Receipt")
                         .WithMany("Items")
                         .HasForeignKey("ReceiptId")
                         .OnDelete(DeleteBehavior.Cascade);

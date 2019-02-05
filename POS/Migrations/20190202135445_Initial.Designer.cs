@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using POS.DataAccess;
@@ -9,19 +10,22 @@ using POS.DataAccess;
 namespace POS.Migrations
 {
     [DbContext(typeof(PosDbContext))]
-    [Migration("20190117224803_Initial")]
+    [Migration("20190202135445_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("POS.Models.PaymentInfo", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<decimal>("Amount");
 
@@ -30,6 +34,8 @@ namespace POS.Migrations
                     b.Property<decimal>("Change");
 
                     b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateModified");
 
                     b.Property<bool>("IsPayed");
 
@@ -46,7 +52,8 @@ namespace POS.Migrations
             modelBuilder.Entity("POS.Models.Product", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Ean");
 
@@ -68,7 +75,8 @@ namespace POS.Migrations
             modelBuilder.Entity("POS.Models.Receipt", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated");
 
@@ -76,9 +84,9 @@ namespace POS.Migrations
 
                     b.Property<bool>("IsCancelled");
 
-                    b.Property<int>("ShiftId");
+                    b.Property<bool>("IsClosed");
 
-                    b.Property<decimal>("Total");
+                    b.Property<int>("ShiftId");
 
                     b.HasKey("Id");
 
@@ -90,7 +98,8 @@ namespace POS.Migrations
             modelBuilder.Entity("POS.Models.ReceiptItem", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated");
 
@@ -106,8 +115,6 @@ namespace POS.Migrations
 
                     b.Property<int>("ReceiptId");
 
-                    b.Property<decimal>("Value");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
@@ -120,19 +127,12 @@ namespace POS.Migrations
             modelBuilder.Entity("POS.Models.Shift", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("CancelledReceiptsCount");
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime?>("EndDate");
 
-                    b.Property<bool>("IsClosed");
-
-                    b.Property<decimal>("NumberOfReceipts");
-
-                    b.Property<int>("RemovedItemsCount");
-
-                    b.Property<DateTime>("StartDate");
+                    b.Property<DateTime?>("StartDate");
 
                     b.Property<decimal>("StartDeposit");
 
@@ -146,7 +146,8 @@ namespace POS.Migrations
             modelBuilder.Entity("POS.Models.Tax", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FiscalSymbol");
 

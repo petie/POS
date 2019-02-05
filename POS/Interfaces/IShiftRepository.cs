@@ -1,6 +1,6 @@
 ﻿using POS.Models;
 
-namespace POS.Interfaces
+namespace POS.Services
 {
     public interface IShiftRepository
     {
@@ -8,5 +8,6 @@ namespace POS.Interfaces
         Shift GetLast();
         void Save(Shift shift);
         Shift Get(int shiftId);
+        void Update(Shift shift);
     }
 }

@@ -1,14 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace POS.Models
 {
     public class PaymentInfo
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public decimal Amount { get; set; }
         public decimal AmountPayed { get; set; }
         public decimal Change { get; set; }
         public bool IsPayed { get; set; }
+        [JsonIgnore]
         public Receipt Receipt { get; set; }
         public int ReceiptId { get; set; }
         public DateTime DateCreated { get; set; }
@@ -21,6 +27,11 @@ namespace POS.Models
             Receipt = receipt;
             ReceiptId = receipt.Id;
             Amount = receipt.Total;
+        }
+
+        public PaymentInfo()
+        {
+
         }
 
         internal bool Pay(PaymentPayload payment)

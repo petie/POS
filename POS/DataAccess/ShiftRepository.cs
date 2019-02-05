@@ -1,4 +1,4 @@
-﻿using POS.Interfaces;
+﻿using POS.Services;
 using POS.Models;
 using System.Linq;
 
@@ -31,6 +31,12 @@ namespace POS.DataAccess
         public void Save(Shift shift)
         {
             context.Add(shift);
+            context.SaveChanges();
+        }
+
+        public void Update(Shift shift)
+        {
+            context.Update(shift);
             context.SaveChanges();
         }
     }

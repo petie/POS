@@ -1,9 +1,10 @@
 ﻿using POS.Models;
 
-namespace POS.Interfaces
+namespace POS.Services
 {
     public interface IFiscalGateway
     {
         void Print(Receipt receipt);
+        void Login();
     }
 }
