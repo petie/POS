@@ -5,6 +5,17 @@ namespace POS.Models
 {
     public class Tax
     {
+        public Tax()
+        {
+
+        }
+
+        public Tax(string symbol, string fiscalSymbol, decimal value)
+        {
+            Symbol = symbol;
+            FiscalSymbol = fiscalSymbol;
+            Value = value;
+        }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

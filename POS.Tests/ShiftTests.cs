@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Posnet.Tests
+namespace POS.Tests
 {
     [TestClass]
-    public class PaymentTests
+    public class ShiftTests
     {
         
     }

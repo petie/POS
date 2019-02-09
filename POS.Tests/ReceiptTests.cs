@@ -6,11 +6,12 @@ using POS.DataAccess;
 using POS.Exceptions;
 using POS.Models;
 using POS.Services;
+using Posnet;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 
-namespace Posnet.Tests
+namespace POS.Tests
 {
     [TestClass]
     public class ReceiptTests

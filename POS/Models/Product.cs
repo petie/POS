@@ -27,6 +27,15 @@
             TaxId = taxId;
         }
 
+        public Product(string ean, string name, decimal price, string unit, int taxId)
+        {
+            Ean = ean;
+            Name = name;
+            Price = price;
+            Unit = unit;
+            TaxId = taxId;
+        }
+
         public Product()
         {
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using POS.Services;
 using POS.Models;
 using System.ComponentModel;
+using System.Linq;
 
 namespace POS.Controllers
 {
@@ -16,7 +17,7 @@ namespace POS.Controllers
         {
             _productService = productService;
         }
-        [HttpGet("ean/{eanCode}")]
+        [HttpGet("ean/search/{eanCode}")]
         [Description("Find product by EAN code")]
         public ActionResult<List<Product>> SearchProduct(string eanCode)
         {
@@ -25,6 +26,17 @@ namespace POS.Controllers
                 return NotFound();
             else
                 return Ok(result);
+        }
+
+        [HttpGet("ean/{eanCode}")]
+        [Description("Get product by EAN code")]
+        public ActionResult<Product> GetProduct(string eanCode)
+        {
+            var result = _productService.Search(eanCode);
+            if (result == null)
+                return NotFound();
+            else
+                return Ok(result.FirstOrDefault());
         }
 
         [HttpGet("{productId}")]
