@@ -5,13 +5,17 @@ namespace POS.DataAccess
 {
     public class PosDbContext : DbContext
     {
+        public PosDbContext()
+        {
+
+        }
         public PosDbContext(DbContextOptions<PosDbContext> options) : base(options)
         { }
-        public DbSet<Receipt> Receipts { get; set; }
-        public DbSet<PaymentInfo> Payments { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<Shift> Shifts { get; set; }
-        public DbSet<ReceiptItem> ReceiptItems { get; set; }
-        public DbSet<Tax> Tax { get; set; }
+        public virtual DbSet<Receipt> Receipts { get; set; }
+        public virtual DbSet<PaymentInfo> Payments { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<Shift> Shifts { get; set; }
+        public virtual DbSet<ReceiptItem> ReceiptItems { get; set; }
+        public virtual DbSet<Tax> Tax { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using POS.Models;
+﻿using POS.Exceptions;
+using POS.Models;
+using System;
 
 namespace POS.Services
 {
@@ -6,25 +8,51 @@ namespace POS.Services
     {
         private readonly IReceiptRepository receiptRepository;
         private readonly IProductService productService;
+        private readonly IShiftService shiftService;
 
-        public ReceiptService(IReceiptRepository receiptRepository, IProductService productService)
+        public ReceiptService(IReceiptRepository receiptRepository, IProductService productService, IShiftService shiftService)
         {
             this.receiptRepository = receiptRepository;
             this.productService = productService;
+            this.shiftService = shiftService;
         }
 
         public ReceiptItem Add(string ean)
         {
-            Receipt receipt = receiptRepository.GetCurrent();
+            if (string.IsNullOrEmpty(ean))
+                throw new ArgumentNullException("Brak numeru EAN");
+            Receipt receipt = GetCurrentReceipt();
             Product product = productService.Get(ean);
             ReceiptItem receiptItem = receipt.AddItem(product);
             receiptRepository.Save(receipt);
             return receiptItem;
         }
 
-        public ReceiptItem ChangeQuantity(int receiptItemId, decimal quantity)
+        private void EnsureCurrentReceiptDoesNotExist()
         {
-            Receipt receipt = receiptRepository.GetCurrent();
+            var currentReceipt = receiptRepository.GetCurrent();
+            if (currentReceipt != null)
+                throw new ActiveReceiptAlreadyExistsException(currentReceipt.Id);
+        }
+
+        private Shift GetCurrentShift()
+        {
+            var shift = shiftService.GetCurrent();
+            if (shift == null)
+                throw new NoActiveShiftException();
+            return shift;
+        }
+
+        private void EnsureShiftExists()
+        {
+            var shift = shiftService.GetCurrent();
+            if (shift == null)
+                throw new NoActiveShiftException();
+        }
+
+        public virtual ReceiptItem ChangeQuantity(int receiptItemId, decimal quantity)
+        {
+            Receipt receipt = GetCurrentReceipt();
             ReceiptItem result = receipt.ChangeQuantity(receiptItemId, quantity);
             receiptRepository.Save(receipt);
             return result;
@@ -32,7 +60,10 @@ namespace POS.Services
 
         public int Create()
         {
-            return receiptRepository.Create();
+            var shift = GetCurrentShift();
+            EnsureCurrentReceiptDoesNotExist();
+            var receipt = new Receipt(shift);
+            return receiptRepository.Create(receipt);
         }
 
         public bool Delete(int receiptId)
@@ -48,7 +79,11 @@ namespace POS.Services
 
         public Receipt GetCurrentReceipt()
         {
-            return receiptRepository.GetCurrent();
+            EnsureShiftExists();
+            var currentReceipt = receiptRepository.GetCurrent();
+            if (currentReceipt == null)
+                throw new NoActiveReceiptException();
+            return currentReceipt;
         }
 
         public bool Remove(int receiptId, int receiptItemId)

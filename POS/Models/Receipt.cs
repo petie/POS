@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using POS.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -68,6 +69,8 @@ namespace POS.Models
         internal ReceiptItem ChangeQuantity(int receiptItemId, decimal quantity)
         {
             ReceiptItem item = Items.SingleOrDefault(i => i.Id == receiptItemId);
+            if (item == null)
+                throw new ReceiptItemDoesNotExistException(receiptItemId);
             item.Quantity = quantity;
             return item;
         }

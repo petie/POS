@@ -34,7 +34,7 @@ namespace POS.Services
             return active;
         }
 
-        public Shift GetCurrent()
+        public virtual Shift GetCurrent()
         {
             return shiftRepository.GetActive();
         }
