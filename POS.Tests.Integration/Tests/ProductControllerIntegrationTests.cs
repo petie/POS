@@ -7,13 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace POS.IntegrationTests
+namespace POS.Tests.Integration
 {
     public class ProductControllerIntegrationTests : BaseIntegrationTest
     {
         public ProductControllerIntegrationTests(CustomWebApplicationFactory factory) : base(factory)
         {
-
         }
 
         [Fact]

@@ -23,6 +23,13 @@ namespace POS.Controllers
             return _receiptService.Create();
         }
 
+        [HttpGet]
+        [Description("Start a new receipt and return its Id")]
+        public ActionResult<Receipt> GetReceipt()
+        {
+            return _receiptService.GetCurrentReceipt();
+        }
+
         [HttpPost("{ean}")]
         [Description("Add a new line item by EAN code")]
         public ActionResult<ReceiptItem> Add(string ean)

@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using POS.DataAccess;
+using POS.Services;
 using POS.Tests.Integration;
+using POS.Tests.Integration.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace POS.IntegrationTests
+namespace POS.Tests.Integration
 {
     public class CustomWebApplicationFactory : WebApplicationFactory<Startup>
     {
@@ -33,7 +36,10 @@ namespace POS.IntegrationTests
                     SeedData.PopulateTestData(appDb);
                 }
             });
-
+            builder.ConfigureTestServices(services =>
+            {
+                services.AddTransient<IFiscalGateway, MockFiscalGateway>();
+            });
 
             base.ConfigureWebHost(builder);
         }

@@ -30,7 +30,7 @@ namespace POS.Services
         {
             Shift active = shiftRepository.GetActive();
             active.Close();
-            shiftRepository.Save(active);
+            shiftRepository.Update(active);
             return active;
         }
 

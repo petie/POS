@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
-using POS.IntegrationTests;
+using POS.Models;
+using Xunit;
 
 namespace POS.Tests.Integration
 {
@@ -13,9 +11,15 @@ namespace POS.Tests.Integration
         {
         }
 
-        public async Task CanCreateShift()
+        [Fact]
+        public async Task CanCloseShift()
         {
-
+            var shift = await Client.CreateShift();
+            Assert.True(shift.Id != 0);
+            shift = await Client.StartShift(shift.Id, 100);
+            Assert.True(shift.IsOpen && !shift.IsClosed);
+            shift = await Client.CloseShift();
+            Assert.True(shift.IsClosed);
         }
     }
 }

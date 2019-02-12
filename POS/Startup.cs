@@ -105,8 +105,14 @@ namespace POS
 
         private void CloseConnection()
         {
-            posnet.Logout();
-            posnet.Close();
+            try
+            {
+                posnet.Logout();
+                posnet.Close();
+            }
+            catch (Exception ea)
+            {
+            }
         }
     }
 }

@@ -15,17 +15,17 @@ namespace POS.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; private set; }
-        public DateTime? StartDate { get; private set; }
-        public DateTime? EndDate { get; private set; }
-        public decimal StartMoney { get; internal set; }
-        public decimal StartDeposit { get; private set; }
+        public int Id { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public decimal StartMoney { get; set; }
+        public decimal StartDeposit { get; set; }
         public decimal NumberOfReceipts => Receipts?.Count(r => !r.IsCancelled) ?? 0;
         public bool IsClosed { get { return EndDate != null; } }
         public bool IsOpen { get { return StartDate != null && !IsClosed; } }
         public int CancelledReceiptsCount => Receipts?.Count(r => r.IsCancelled) ?? 0;
         public int RemovedItemsCount => Receipts?.Sum(r => r.Items.Count(i => i.IsRemoved)) ?? 0;
-        public IEnumerable<Receipt> Receipts { get; private set; }
+        public IEnumerable<Receipt> Receipts { get; set; }
         public decimal EndMoney => StartMoney + StartDeposit + Receipts?.Sum(r => r.Total) ?? 0;
 
         public Shift(decimal startMoney)
