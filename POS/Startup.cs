@@ -22,7 +22,7 @@ namespace POS
         {
             Configuration = configuration;
         }
-        private PosnetDriverPosnetProtocol posnet;
+        private IFiscalDriver posnet;
 
         public IConfiguration Configuration { get; }
 
@@ -41,23 +41,11 @@ namespace POS
             PosSettings settings = new PosSettings();
             Configuration.GetSection("POSSettings").Bind(settings);
             services.AddSingleton(settings);
-            posnet = new PosnetDriverPosnetProtocol(new PosnetSettings
-            {
-                BaudRate = settings.FiscalPrinter.BaudRate,
-                Handshake = settings.FiscalPrinter.Handshake,
-                Port = settings.FiscalPrinter.Port
-
-            });
-            posnet.PrinterId = "TARGI";
-            posnet.OperatorId = "TARGI";
-            posnet.Open();
-            services.AddSingleton(posnet);
             services.AddOpenApiDocument();
-
-            // Register services
+            services.AddSingleton<IFiscalDriver, PosnetDriverPosnetProtocol>();
             services.AddTransient<IShiftService, ShiftService>();
             services.AddTransient<IProductService, ProductService>();
-            services.AddTransient<IFiscalService, FiscalService>();
+            services.AddSingleton<IFiscalService, FiscalService>();
             services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<IReceiptService, ReceiptService>();
 
@@ -100,15 +88,15 @@ namespace POS
                 Title = "POS",
                 Fullscreen = true
             }));
-            applicationLifetime.ApplicationStopping.Register(CloseConnection);
+            applicationLifetime.ApplicationStopping.Register(() => CloseConnection(app.ApplicationServices));
         }
 
-        private void CloseConnection()
+        private void CloseConnection(IServiceProvider applicationServices)
         {
             try
             {
-                posnet.Logout();
-                posnet.Close();
+                var fg = applicationServices.GetService<IFiscalGateway>();
+                fg.LogOut();
             }
             catch (Exception ea)
             {

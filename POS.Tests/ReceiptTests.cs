@@ -74,7 +74,7 @@ namespace POS.Tests
         {
             mockShiftService.Setup(s => s.GetCurrent()).Returns(new Shift(1, 100, DateTime.Now));
             mockRepository.Setup(r => r.GetCurrent()).Returns(new Receipt());
-            mockProductService.Setup(s => s.Get("123")).Returns(new Product(1, "123", 1, "szt", 1));
+            mockProductService.Setup(s => s.Get("123")).Returns(new Product(1, "123", 1, "szt", 1) { Tax = new Tax("23.00","A",23.00m) });
             var service = CreateService();
             var result = service.Add("123");
             Assert.AreEqual("123", result.Product.Ean);
@@ -142,7 +142,7 @@ namespace POS.Tests
         public void ChangeQuantityOnItemTest()
         {
             mockShiftService.Setup(s => s.GetCurrent()).Returns(new Shift(1, 100, DateTime.Now));
-            mockRepository.Setup(r => r.GetCurrent()).Returns(new Receipt { Items = new List<ReceiptItem> { new ReceiptItem() { Id = 1} } });
+            mockRepository.Setup(r => r.GetCurrent()).Returns(new Receipt { AllItems = new List<ReceiptItem> { new ReceiptItem() { Id = 1, Unit="szt"} } });
             //mockRepository.Setup(r => r.Create(It.IsAny<Receipt>())).Returns(1);
             var service = CreateService();
             var result = service.ChangeQuantity(1, 10);
@@ -154,7 +154,7 @@ namespace POS.Tests
         public void ChangeQuantityMissingReceiptItemTest()
         {
             mockShiftService.Setup(s => s.GetCurrent()).Returns(new Shift(1, 100, DateTime.Now));
-            mockRepository.Setup(r => r.GetCurrent()).Returns(new Receipt { Items = new List<ReceiptItem> { new ReceiptItem() { Id = 2 } } });
+            mockRepository.Setup(r => r.GetCurrent()).Returns(new Receipt { AllItems = new List<ReceiptItem> { new ReceiptItem() { Id = 2, Unit = "szt" } } });
             var service = CreateService();
             var result = service.ChangeQuantity(1, 10);
         }
@@ -174,7 +174,7 @@ namespace POS.Tests
         public void ChangeQuantityNoShiftTest()
         {
             mockShiftService.Setup(s => s.GetCurrent()).Returns<Shift>(null);
-            mockRepository.Setup(r => r.GetCurrent()).Returns(new Receipt { Items = new List<ReceiptItem> { new ReceiptItem() { Id = 1 } } });
+            mockRepository.Setup(r => r.GetCurrent()).Returns(new Receipt { AllItems = new List<ReceiptItem> { new ReceiptItem() { Id = 1, Unit = "szt" } } });
             //mockRepository.Setup(r => r.Create(It.IsAny<Receipt>())).Returns(1);
             var service = CreateService();
             var result = service.ChangeQuantity(1, 10);

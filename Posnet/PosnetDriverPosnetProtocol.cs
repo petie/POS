@@ -33,9 +33,9 @@ namespace Posnet
         private Dictionary<int, long> payments;
         private int NonFiscalPrintId;
         private bool communicationLog;
-        private readonly PosnetSettings settings;
+        private PosnetSettings settings;
 
-        public PosnetDriverPosnetProtocol(PosnetSettings settings)
+        public void Setup(PosnetSettings settings)
         {
             id = new Random().Next();
             Trace.WriteLine(id.ToString() + " - PosnetDriver");
@@ -71,6 +71,11 @@ namespace Posnet
             mazoviaCode.Add('Ä', 142);
             mazoviaCode.Add('Ö', 153);
             this.settings = settings;
+        }
+
+        public PosnetDriverPosnetProtocol()
+        {
+
         }
 
         private void AddOptionalCommandParameter(ref string Parameters, string ParameterId, string ParameterValue)

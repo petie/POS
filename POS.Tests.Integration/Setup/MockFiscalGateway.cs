@@ -14,6 +14,11 @@ namespace POS.Tests.Integration.Setup
         {
         }
 
+        public void LogOut()
+        {
+            
+        }
+
         public void Print(Receipt receipt)
         {
         }

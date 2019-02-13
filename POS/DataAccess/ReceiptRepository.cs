@@ -33,7 +33,10 @@ namespace POS.DataAccess
 
         public virtual Receipt GetCurrent()
         {
-            return context.Receipts.Include(r => r.Items).SingleOrDefault(c => !c.IsClosed);
+            return context.Receipts
+                .Include(r => r.AllItems)
+                .ThenInclude(ri => ri.Product)
+                .SingleOrDefault(c => !c.IsClosed);
         }
 
         public bool Save(Receipt receipt)

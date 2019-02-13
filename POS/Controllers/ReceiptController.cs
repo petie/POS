@@ -37,7 +37,7 @@ namespace POS.Controllers
             return _receiptService.Add(ean);
         }
 
-        [HttpDelete("receiptItem/{receiptItemId}")]
+        [HttpDelete("{receiptId}/{receiptItemId}")]
         [Description("Remove a receipt item by it's Id from a given receipt")]
         public ActionResult<bool> Remove(int receiptId, int receiptItemId)
         {

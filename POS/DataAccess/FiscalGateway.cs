@@ -5,17 +5,30 @@ using POS.Models.POS;
 using Posnet;
 using System;
 using System.IO.Ports;
+using System.Diagnostics;
 
 namespace POS.DataAccess
 {
     public class FiscalGateway : IFiscalGateway
     {
         //private readonly PosSettings settings;
-        private PosnetDriverPosnetProtocol posnet;
+        private IFiscalDriver posnet;
 
-        public FiscalGateway(PosnetDriverPosnetProtocol posnet)
+        public FiscalGateway(IFiscalDriver posnet, PosnetSettings settings)
         {
             this.posnet = posnet;
+            posnet.Setup(settings);
+            posnet.OperatorId = "Targi";
+            posnet.Open();
+            Debug.WriteLine("Opened connection");
+            Login();
+
+        }
+
+        public void LogOut()
+        {
+            posnet.Logout();
+            posnet.Close();
         }
 
         public void Login()

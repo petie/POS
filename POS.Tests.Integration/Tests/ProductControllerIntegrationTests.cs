@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace POS.Tests.Integration
+namespace POS.Tests.Integration.Tests
 {
     public class ProductControllerIntegrationTests : BaseIntegrationTest
     {

@@ -12,14 +12,14 @@ namespace POS.Models
     {
         public Receipt()
         {
-            Items = new List<ReceiptItem>();
+            AllItems = new List<ReceiptItem>();
         }
 
         public Receipt(Shift shift)
         {
             Shift = shift;
             ShiftId = shift.Id;
-            Items = new List<ReceiptItem>();
+            AllItems = new List<ReceiptItem>();
             DateCreated = DateTime.Now;
             DateModified = DateTime.Now;
         }
@@ -37,7 +37,9 @@ namespace POS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public List<ReceiptItem> Items { get; set; }
+        public List<ReceiptItem> Items => AllItems.Where(i => !i.IsRemoved).ToList();
+
+        public List<ReceiptItem> AllItems { get; set; }
 
         internal int GetNextOrdinalNumber() => 1 + Items?.Count ?? 0;
 
@@ -71,7 +73,7 @@ namespace POS.Models
             ReceiptItem item = Items.SingleOrDefault(i => i.Id == receiptItemId);
             if (item == null)
                 throw new ReceiptItemDoesNotExistException(receiptItemId);
-            item.Quantity = quantity;
+            item.ChangeQuantity(quantity);
             return item;
         }
 

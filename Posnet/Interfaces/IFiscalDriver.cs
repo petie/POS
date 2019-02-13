@@ -100,5 +100,7 @@ namespace Posnet
         void LogoutERP();
 
         bool CommunicationLog { get; set; }
+
+        void Setup(PosnetSettings settings);
     }
 }

@@ -6,5 +6,6 @@ namespace POS.Services
     {
         void Print(Receipt receipt);
         void Login();
+        void LogOut();
     }
 }

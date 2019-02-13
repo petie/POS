@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using POS.Models;
 using Xunit;
 
-namespace POS.Tests.Integration
+namespace POS.Tests.Integration.Tests
 {
     public class ShiftControllerIntegrationTests : BaseIntegrationTest
     {

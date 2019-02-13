@@ -190,7 +190,7 @@ namespace POS.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("POS.Models.Receipt", "Receipt")
-                        .WithMany("Items")
+                        .WithMany("AllItems")
                         .HasForeignKey("ReceiptId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
