@@ -37,6 +37,7 @@ namespace POS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        [NotMapped]
         public List<ReceiptItem> Items => AllItems.Where(i => !i.IsRemoved).ToList();
 
         public List<ReceiptItem> AllItems { get; set; }

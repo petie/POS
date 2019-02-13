@@ -28,7 +28,7 @@ namespace POS.DataAccess
 
         public virtual Receipt Get(int receiptId)
         {
-            return context.Receipts.Include(r => r.Items).SingleOrDefault(r => r.Id == receiptId);
+            return context.Receipts.Include(r => r.AllItems).SingleOrDefault(r => r.Id == receiptId);
         }
 
         public virtual Receipt GetCurrent()
@@ -42,6 +42,13 @@ namespace POS.DataAccess
         public bool Save(Receipt receipt)
         {
             context.Receipts.Update(receipt);
+            context.SaveChanges();
+            return true;
+        }
+
+        public bool Create(ReceiptItem receiptItem)
+        {
+            context.ReceiptItems.Add(receiptItem);
             context.SaveChanges();
             return true;
         }

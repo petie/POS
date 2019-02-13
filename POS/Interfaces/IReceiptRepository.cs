@@ -7,6 +7,7 @@ namespace POS.Services
         Receipt FindByReceiptItemId(int receiptItemId);
         int Create(Receipt receipt);
         bool Save(Receipt receipt);
+        bool Create(ReceiptItem receiptItem);
         Receipt Get(int receiptId);
         Receipt GetCurrent();
     }

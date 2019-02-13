@@ -24,7 +24,7 @@ namespace POS.Services
             Receipt receipt = GetCurrentReceipt();
             Product product = productService.Get(ean);
             ReceiptItem receiptItem = receipt.AddItem(product);
-            receiptRepository.Save(receipt);
+            receiptRepository.Create(receiptItem);
             return receiptItem;
         }
 

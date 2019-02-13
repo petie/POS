@@ -117,12 +117,19 @@ namespace POS.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrdinalNumber = table.Column<int>(nullable: false),
+                    Ean = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Price = table.Column<decimal>(nullable: false),
+                    Unit = table.Column<string>(nullable: true),
                     ProductId = table.Column<int>(nullable: false),
                     Quantity = table.Column<decimal>(nullable: false),
+                    Value = table.Column<decimal>(nullable: false),
                     IsRemoved = table.Column<bool>(nullable: false),
                     ReceiptId = table.Column<int>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
-                    DateModified = table.Column<DateTime>(nullable: false)
+                    DateModified = table.Column<DateTime>(nullable: false),
+                    TaxValue = table.Column<decimal>(nullable: false),
+                    TaxRate = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -166,23 +173,6 @@ namespace POS.Migrations
                 name: "IX_Receipts_ShiftId",
                 table: "Receipts",
                 column: "ShiftId");
-
-            migrationBuilder.Sql(@"insert into POS.dbo.Tax  (Symbol, Value, FiscalSymbol) SELECT [DSSVAT_Stawka], [DSSVAT_Stawka], [DSSVAT_DFSymbol]
-                    FROM [CDN_BIOVERT].[CDN].[DetalStanStawkiVAT] where DSSVAT_DFSymbol <> '' and DSSVAT_StanDetalID = 1
-
-                    INSERT INTO Pos.[dbo].[Products]
-                            ([Ean]
-                            ,[Name]
-                            ,[Price]
-                            ,[Unit]
-                            ,[TaxId])
-                        SELECT [Twr_EAN]
-	                    ,[Twr_Nazwa]
-                        ,(select twc_wartosc from CDN_biovert.cdn.TwrCeny where TwC_TwCNumer = Twr_TwCNumer and twc_typ = 2 and TwC_TwrID = Twr_TwrId)
-	                    ,[Twr_JM]
-                        ,(select Id from pos.dbo.tax where value = [Twr_Stawka])
-                    FROM [CDN_BIOVERT].[CDN].[Towary] where Twr_NieAktywny = 0
-            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

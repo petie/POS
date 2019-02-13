@@ -24,7 +24,7 @@ namespace POS.Models
         public bool IsClosed { get { return EndDate != null; } }
         public bool IsOpen { get { return StartDate != null && !IsClosed; } }
         public int CancelledReceiptsCount => Receipts?.Count(r => r.IsCancelled) ?? 0;
-        public int RemovedItemsCount => Receipts?.Sum(r => r.Items.Count(i => i.IsRemoved)) ?? 0;
+        public int RemovedItemsCount => Receipts?.Sum(r => r.AllItems.Count(i => i.IsRemoved)) ?? 0;
         public IEnumerable<Receipt> Receipts { get; set; }
         public decimal EndMoney => StartMoney + StartDeposit + Receipts?.Sum(r => r.Total) ?? 0;
 

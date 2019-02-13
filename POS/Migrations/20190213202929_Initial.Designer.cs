@@ -10,14 +10,14 @@ using POS.DataAccess;
 namespace POS.Migrations
 {
     [DbContext(typeof(PosDbContext))]
-    [Migration("20190202135445_Initial")]
+    [Migration("20190213202929_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -105,15 +105,29 @@ namespace POS.Migrations
 
                     b.Property<DateTime>("DateModified");
 
+                    b.Property<string>("Ean");
+
                     b.Property<bool>("IsRemoved");
 
+                    b.Property<string>("Name");
+
                     b.Property<int>("OrdinalNumber");
+
+                    b.Property<decimal>("Price");
 
                     b.Property<int>("ProductId");
 
                     b.Property<decimal>("Quantity");
 
                     b.Property<int>("ReceiptId");
+
+                    b.Property<decimal>("TaxRate");
+
+                    b.Property<decimal>("TaxValue");
+
+                    b.Property<string>("Unit");
+
+                    b.Property<decimal>("Value");
 
                     b.HasKey("Id");
 
@@ -192,7 +206,7 @@ namespace POS.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("POS.Models.Receipt", "Receipt")
-                        .WithMany("Items")
+                        .WithMany("AllItems")
                         .HasForeignKey("ReceiptId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
