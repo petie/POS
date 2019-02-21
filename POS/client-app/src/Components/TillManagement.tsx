@@ -17,7 +17,7 @@ import {
   StyledComponentProps
 } from "@material-ui/core";
 import { IRootState } from "../Reducers/Index";
-import { startShift, initializeShift, endShiftShow, endShiftSubmit } from "../Reducers/ShiftReducer";
+import { startShiftShow, endShiftShow, endShiftSubmit, endShiftShowCancel, startShiftShowCancel, startShiftSubmit } from "../Reducers/ShiftReducer";
 import { connect } from "react-redux";
 import compose from "recompose/compose";
 
@@ -25,9 +25,13 @@ function Transition(props: any) {
   return <Slide direction="up" {...props} />;
 }
 
-const styles = (theme: Theme) => createStyles({});
+const styles = (theme: Theme) => createStyles({
+  dialog: {
+    minWidth: 1000
+  }
+});
 
-type TillProps = StyledComponentProps & StateProps & DispatchProps;
+
 type TillState = {
   amount: string;
 };
@@ -37,16 +41,23 @@ class TillManagement extends React.Component<TillProps, TillState> {
     this.state = { amount: "" };
   }
   render() {
+    const { classes } = this.props;
+    const c = classes || {};
     return (
       <div>
         {this.props.showStartShift ? (
-          <Dialog open={this.props.showDialog} TransitionComponent={Transition}>
+          <Dialog open={this.props.showDialog} className={c.dialog} TransitionComponent={Transition} maxWidth="xl">
             <DialogTitle id="form-dialog-title">Otwarcie zmiany</DialogTitle>
             <DialogContent>
               <Grid container>
-                <Grid item md={12}>
-                  <Typography>
-                    Aktualna kwota na stanowisku: {this.props.startAmount}
+                <Grid item md={9}>
+                  <Typography variant="h4">
+                    Aktualna kwota na stanowisku:
+                  </Typography>
+                </Grid>
+                <Grid item md={3}>
+                  <Typography variant="h4">
+                    {this.props.startMoney}
                   </Typography>
                 </Grid>
               </Grid>
@@ -60,37 +71,39 @@ class TillManagement extends React.Component<TillProps, TillState> {
                   autoFocus
                   margin="dense"
                   id="amount"
-                  label="amount"
+                  label="Kwota początkowa"
                   type="number"
                   value={this.state.amount}
+                  onKeyDown={(event) => this.handleEnter(event)}
+                  onChange={(event) => this.handleChangeAmount(event)}
                   fullWidth
                 />
               </Grid>
               <Grid container>
                 <Grid item md={6}>
-                  <Button color="primary">Zatwierdź</Button>
+                  <Button color="primary" onClick={(event) => this.handleSubmitStartShift(event)} >Zatwierdź</Button>
                 </Grid>
                 <Grid item md={6}>
-                  <Button color="primary">Anuluj</Button>
+                  <Button color="primary" onClick={(event) => this.handleCancelStartShift(event)} >Anuluj</Button>
                 </Grid>
               </Grid>
             </DialogContent>
           </Dialog>
         ) : (
-          <Dialog open={this.props.showDialog} TransitionComponent={Transition}>
+          <Dialog open={this.props.showDialog} className={c.dialog} TransitionComponent={Transition}>
             <DialogTitle id="form-dialog-title">Zamknięcie zmiany</DialogTitle>
             <DialogContent>
               <Grid container>
                 <Grid item md={6}>
-                  <Typography>Kwota z przeniesienia:</Typography>
+                  <Typography variant="h4">Kwota z przeniesienia:</Typography>
                 </Grid>
                 <Grid item md={6}>
-                  <Typography>{this.props.startAmount}</Typography>
+                  <Typography variant="h4">{this.props.startMoney}</Typography>
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item md={6}>
-                  <Typography>Wpłata początkowa:</Typography>
+                  <Typography variant="h4">Wpłata początkowa:</Typography>
                 </Grid>
                 {/* <Grid item md={6}>
                   <Typography>{this.props.amount}</Typography>
@@ -98,48 +111,48 @@ class TillManagement extends React.Component<TillProps, TillState> {
               </Grid>
               <Grid container>
                 <Grid item md={6}>
-                  <Typography>Ilość paragonów:</Typography>
+                  <Typography variant="h4">Ilość paragonów:</Typography>
                 </Grid>
                 <Grid item md={6}>
-                  <Typography>{this.props.numberOfReceipts}</Typography>
+                  <Typography variant="h4">{this.props.numberOfReceipts}</Typography>
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item md={6}>
-                  <Typography>Ilość anulowanych paragonów:</Typography>
+                  <Typography variant="h4">Ilość anulowanych paragonów:</Typography>
                 </Grid>
                 <Grid item md={6}>
-                  <Typography>
-                    {this.props.numberOfCancelledReceipts}
+                  <Typography variant="h4">
+                    {this.props.cancelledReceiptsCount}
                   </Typography>
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item md={6}>
-                  <Typography>Ilość anulowanych pozycji:</Typography>
+                  <Typography variant="h4">Ilość anulowanych pozycji:</Typography>
                 </Grid>
                 <Grid item md={6}>
-                  <Typography>
-                    {this.props.numberOfCancelledReceiptItems}
+                  <Typography variant="h4">
+                    {this.props.removedItemsCount}
                   </Typography>
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item md={6}>
-                  <Typography>Sprzedaż:</Typography>
+                  <Typography variant="h4">Sprzedaż:</Typography>
                 </Grid>
                 <Grid item md={6}>
-                  <Typography>{this.props.sales}</Typography>
+                  <Typography variant="h4">{this.props.sales}</Typography>
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item md={3}>
-                  <Typography>Wpłata początkowa</Typography>
+                  <Typography variant="h4">Wpłata początkowa</Typography>
                 </Grid>
               </Grid>
               <Grid container>
                 <Grid item md={6}>
-                  <Typography>Pozostaje:</Typography>
+                  <Typography variant="h4">Pozostaje:</Typography>
                 </Grid>
                 {/* <Grid item md={6}>
                   <Typography>{this.props.}</Typography>
@@ -147,10 +160,10 @@ class TillManagement extends React.Component<TillProps, TillState> {
               </Grid>
               <Grid container>
                 <Grid item md={6}>
-                  <Button color="primary">Zamknij zmianę</Button>
+                  <Button color="primary" onClick={(event) => this.handleSubmitCloseShift(event)}>Zamknij zmianę</Button>
                 </Grid>
                 <Grid item md={6}>
-                  <Button color="primary">Anuluj</Button>
+                  <Button color="primary" onClick={(event) => this.handleCancelCloseShift(event)}>Anuluj</Button>
                 </Grid>
               </Grid>
             </DialogContent>
@@ -158,6 +171,27 @@ class TillManagement extends React.Component<TillProps, TillState> {
         )}
       </div>
     );
+  }
+  handleEnter(event: React.KeyboardEvent<HTMLDivElement>): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.handleSubmitStartShift();
+    }
+  }
+  handleChangeAmount(event: any): void {
+    this.setState({amount: event.target.value})
+  }
+  handleCancelStartShift(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
+    this.props.startShiftShowCancel();
+  }
+  handleSubmitStartShift(event?: React.MouseEvent<HTMLElement, MouseEvent>): void {
+    this.props.startShiftSubmit(this.props.id, Number(this.state.amount));
+  }
+  handleSubmitCloseShift(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
+    this.props.endShiftSubmit();
+  }
+  handleCancelCloseShift(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
+    this.props.endShiftShowCancel();
   }
 }
 
@@ -170,9 +204,9 @@ const mapStateToProps = (store: IRootState) => ({
     // numberOfReceipts: store.shift.numberOfReceipts
 });
 
-const mapDispatchToProps = { startShift, initializeShift, endShiftShow, endShiftSubmit}
+const mapDispatchToProps = { startShift: startShiftShow, endShiftShow, endShiftSubmit, endShiftShowCancel, startShiftSubmit, startShiftShowCancel}
 
 type StateProps = ReturnType<typeof  mapStateToProps>;
 type DispatchProps = typeof mapDispatchToProps;
-
+type TillProps = StyledComponentProps & StateProps & DispatchProps;
 export default compose<TillProps, {}>(withStyles(styles),connect(mapStateToProps, mapDispatchToProps))(TillManagement);

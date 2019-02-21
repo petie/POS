@@ -19,9 +19,14 @@ namespace POS.Services
             Receipt currentReceipt = receiptSerivce.GetCurrentReceipt();
             if (currentReceipt != null && currentReceipt.Total > 0)
             {
-                PaymentInfo info = new PaymentInfo(currentReceipt);
-                paymentRepository.Save(info);
-                return info;
+                if (currentReceipt.Payment != null)
+                    return currentReceipt.Payment;
+                else
+                {
+                    PaymentInfo info = new PaymentInfo(currentReceipt);
+                    paymentRepository.Save(info);
+                    return info;
+                }
             }
             return null;
         }

@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 
 namespace POS.Models
 {
@@ -21,18 +22,13 @@ namespace POS.Models
                 throw new ArgumentNullException(nameof(product.Tax));
             Product = product;
             ProductId = product.Id;
-            Ean = product.Ean;
-            Name = product.Name;
             ReceiptId = receipt.Id;
             Receipt = receipt;
             DateCreated = DateTime.Now;
             DateModified = DateTime.Now;
             OrdinalNumber = receipt.GetNextOrdinalNumber();
             Quantity = 1;
-            Price = product.Price;
-            TaxRate = product.Tax.Value;
-            Unit = product.Unit;
-            Recalculate();
+            //Recalculate();
         }
 
         public void ChangeQuantity(decimal quantity)
@@ -42,13 +38,13 @@ namespace POS.Models
             if (Unit.ToLower().StartsWith("szt") && quantity % 1 != 0)
                 throw new ArgumentOutOfRangeException("Ilość nie może być ułamkiem dla jednostki szt.", (Exception)null);
             Quantity = quantity;
-            Recalculate();
+            //Recalculate();
         }
-        private void Recalculate()
-        {
-            Value = Price * Quantity;
-            TaxValue = TaxRate / 100 * Value;
-        }
+        //private void Recalculate()
+        //{
+        //    //Value = Price * Quantity;
+        //    //TaxValue = TaxRate / 100 * Value;
+        //}
 
         /// <summary>
         /// Constructor used for testing
@@ -65,22 +61,35 @@ namespace POS.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int OrdinalNumber { get; set; }
-        public string Ean { get; set; }
-        public string Name { get; set; }
+        [NotMapped]
+        public string Ean => Product?.Ean;
+        [NotMapped]
+        public string Name => Product?.Name;
         [JsonIgnore]
         public Product Product { get; set; }
-        public decimal Price { get; set; }
-        public string Unit { get; set; }
+        [NotMapped]
+        [JsonIgnore]
+        public decimal Price => Product?.Price ?? 0;
+        [JsonProperty("price")]
+        public string PriceString => Price.ToString("C", CultureInfo.CreateSpecificCulture("pl-PL"));
+        [NotMapped]
+        public string Unit => Product?.Unit;
         public int ProductId { get; set; }
         public decimal Quantity { get; set; }
-        public decimal Value { get; set; }
+        [NotMapped]
+        [JsonIgnore]
+        public decimal Value => Quantity * Price;
+        [JsonProperty("value")]
+        public string ValueString => Value.ToString("C", CultureInfo.CreateSpecificCulture("pl-PL"));
         public bool IsRemoved { get; set; }
         [JsonIgnore]
         public Receipt Receipt { get; set; }
         public int ReceiptId { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateModified { get; set; }
-        public decimal TaxValue { get; set; }
-        public decimal TaxRate { get; set; }
+        [NotMapped]
+        public decimal TaxValue => TaxRate / 100 * Value;
+        [NotMapped]
+        public decimal TaxRate => Product?.Tax?.Value ?? 0;
     }
 }

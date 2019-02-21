@@ -1,66 +1,96 @@
-import {
-  Theme,
-  createStyles,
-  withStyles,
-  Grid,
-  TextField
-} from "@material-ui/core";
+import { Theme, createStyles, withStyles, Grid, TextField, StyledComponentProps } from "@material-ui/core";
 
 import React from "react";
+import { IRootState } from "../Reducers/Index";
+import { compose } from "recompose";
+import { connect } from "react-redux";
+import { addItemToReceipt } from "../Reducers/ReceiptReducer";
 
-const styles = (theme: Theme) => createStyles({
-    textField: {
-        marginLeft: theme.spacing.unit * 4,
-        marginTop: theme.spacing.unit * 4,
-        marginBottom: theme.spacing.unit * 4
-    },
-    inputField: {
-        fontSize: theme.typography.h4.fontSize
-    },
-    label: {
-        fontSize: theme.typography.h4.fontSize
-    }
-});
+const styles = (theme: Theme) =>
+    createStyles({
+        textField: {
+            marginLeft: theme.spacing.unit * 4,
+            marginTop: theme.spacing.unit * 4,
+            marginBottom: theme.spacing.unit * 4
+        },
+        inputField: {
+            fontSize: theme.typography.h4.fontSize
+        },
+        label: {
+            fontSize: theme.typography.h4.fontSize
+        }
+    });
 
 type BottomMenuState = {
-  name: string;
+    name: string;
 };
 
-class BottomMenu extends React.Component<any, BottomMenuState> {
-    constructor(props:any){
+class BottomMenu extends React.Component<BottomMenuProps, BottomMenuState> {
+    constructor(props: any) {
         super(props);
         this.state = {
-            name:""
+            name: ""
+        };
+    }
+    handlePickProduct() {
+        this.props.addItemToReceipt(this.state.name);
+    }
+    handleChange(name: string) {
+        return (event: any) => {
+            if (event.key === "Enter") this.handlePickProduct();
+            else
+                return this.setState({
+                    [name]: event.target.value
+                } as BottomMenuState);
+        };
+    }
+    render() {
+        const { classes } = this.props;
+        const c = classes || {}
+        return (
+            <Grid container>
+                <Grid item md={8}>
+                    <TextField
+                        fullWidth
+                        id="standard-name"
+                        label="Dodaj produkt"
+                        variant="outlined"
+                        className={c.textField}
+                        InputProps={{ className: c.inputField }}
+                        InputLabelProps={{ className: c.label }}
+                        value={this.state.name}
+                        onKeyPress={(event) => this.handleEnterKey(event)}
+                        onChange={(event) => this.handleEanChange(event)}
+                        margin="normal"
+                    />
+                </Grid>
+            </Grid>
+        );
+    }
+    handleEnterKey(event: React.KeyboardEvent<HTMLDivElement>): void {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            this.handlePickProduct();
         }
     }
-  handleChange(name: string) {
-    return (event: any) => {
-      return this.setState({
-        [name]: event.target.value
-      } as BottomMenuState);
-    };
-  }
-  render() {
-    const { classes } = this.props;
-    return (
-      <Grid container>
-        <Grid item md={8}>
-          <TextField
-            fullWidth
-            id="standard-name"
-            label="Dodaj produkt"
-            variant="outlined"
-            className={classes.textField}
-            InputProps={{className: classes.inputField}}
-            InputLabelProps={{className: classes.label}}
-            value={this.state.name}
-            onChange={this.handleChange("name")}
-            margin="normal"
-          />
-        </Grid>
-      </Grid>
-    );
-  }
+    handleEanChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
+        this.setState({
+            ["name"]: event.target.value
+        } as BottomMenuState);
+    }
 }
+const mapStateToProps = () => ({
 
-export default withStyles(styles)(BottomMenu);
+});
+const mapDispatchToProps = { addItemToReceipt };
+
+type StateProps = ReturnType<typeof mapStateToProps>;
+type DispatchProps = typeof mapDispatchToProps;
+type BottomMenuProps = StyledComponentProps & StateProps & DispatchProps;
+export default compose<BottomMenuProps, {}>(
+    withStyles(styles),
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )
+)(BottomMenu);

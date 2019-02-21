@@ -1,7 +1,7 @@
-﻿using POS.Services;
+﻿using Microsoft.EntityFrameworkCore;
 using POS.Models;
+using POS.Services;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace POS.DataAccess
 {
@@ -14,11 +14,11 @@ namespace POS.DataAccess
             this.context = context;
         }
 
-        public virtual int Create(Receipt receipt)
+        public virtual Receipt Create(Receipt receipt)
         {
             context.Receipts.Add(receipt);
             context.SaveChanges();
-            return receipt.Id;
+            return receipt;
         }
 
         public virtual Receipt FindByReceiptItemId(int receiptItemId)
@@ -28,7 +28,11 @@ namespace POS.DataAccess
 
         public virtual Receipt Get(int receiptId)
         {
-            return context.Receipts.Include(r => r.AllItems).SingleOrDefault(r => r.Id == receiptId);
+            return context.Receipts
+                .Include(r => r.AllItems)
+                .ThenInclude(ri => ri.Product)
+                .Include(r => r.Payment)
+                .SingleOrDefault(r => r.Id == receiptId && !r.IsClosed);
         }
 
         public virtual Receipt GetCurrent()
@@ -36,6 +40,7 @@ namespace POS.DataAccess
             return context.Receipts
                 .Include(r => r.AllItems)
                 .ThenInclude(ri => ri.Product)
+                .Include(r => r.Payment)
                 .SingleOrDefault(c => !c.IsClosed);
         }
 

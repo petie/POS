@@ -5,4 +5,5 @@ export default interface Product {
     unit:string;
     price:string;
     value:string;
+    tax:string;
 }

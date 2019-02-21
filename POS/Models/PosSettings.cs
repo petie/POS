@@ -14,6 +14,7 @@ namespace POS.Models
         using System.IO.Ports;
         using Newtonsoft.Json;
         using Newtonsoft.Json.Converters;
+        using Posnet;
 
         public partial class Welcome
         {
@@ -55,6 +56,17 @@ namespace POS.Models
 
             [JsonProperty("BaudRate")]
             public int BaudRate { get; set; }
+
+            public PosnetSettings GetPosnetSettings()
+            {
+                return new PosnetSettings
+                {
+                    BaudRate = BaudRate,
+                    Handshake = Handshake,
+                    Name = "TARGI",
+                    Port = Port
+                };
+            }
         }
 
         public partial class TaxRate

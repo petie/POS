@@ -1,5 +1,10 @@
 ﻿import React, { createRef } from "react";
-import { Table, TableHead, TableRow, TableCell, TableBody, Theme, createStyles, withStyles } from "@material-ui/core";
+import { Table, TableHead, TableRow, TableCell, TableBody, Theme, createStyles, withStyles, StyledComponentProps } from "@material-ui/core";
+import { compose } from "recompose";
+import { connect } from "react-redux";
+import { IRootState } from "../Reducers/Index";
+import { selectReceiptItem } from "../Reducers/ReceiptReducer";
+import ReceiptItem from "../Models/ReceiptItem";
 
 const styles = (theme: Theme) => createStyles({
     table: {
@@ -7,7 +12,7 @@ const styles = (theme: Theme) => createStyles({
         paddingRight: theme.spacing.unit        
     },
     cell: {
-
+        fontSize: "1rem"
     },
     headerCell: { 
         fontSize: "1rem",
@@ -20,8 +25,11 @@ const styles = (theme: Theme) => createStyles({
 type ReceiptDetailsState = {
     selectedId: number | null;
 }
+type BaseProps = {
+    rows: ReceiptItem[]
+}
 
-class ReceiptDetails extends React.Component<any, ReceiptDetailsState> {
+class ReceiptDetails extends React.Component<ReceiptDetailsProps, ReceiptDetailsState> {
     constructor(props: any){
         super(props);
         this.state = {
@@ -46,35 +54,36 @@ class ReceiptDetails extends React.Component<any, ReceiptDetailsState> {
     }
     selectRow(id: number) {
         return (event: any) => {
-            this.setState({selectedId: id});
+            this.props.selectReceiptItem(id);
         }
     }
     el = createRef<HTMLDivElement>();
     render() {
         const { rows, classes } = this.props;
-        return <div><Table className={classes.table}>
+        const c = classes || {};
+        return <div><Table className={c.table}>
             <TableHead>
                 <TableRow>
-                    <TableCell className={classes.headerCell}>Lp.</TableCell>
-                    <TableCell className={classes.headerCell}>EAN</TableCell>
-                    <TableCell className={classes.headerCell}>Nazwa</TableCell>
-                    <TableCell className={classes.headerCell}>Ilość</TableCell>
-                    <TableCell className={classes.headerCell}>Jm</TableCell>
-                    <TableCell className={classes.headerCell}>Cena</TableCell>
-                    <TableCell className={classes.headerCell}>Wartość</TableCell>
+                    <TableCell className={c.headerCell}>Lp.</TableCell>
+                    <TableCell className={c.headerCell}>EAN</TableCell>
+                    <TableCell className={c.headerCell}>Nazwa</TableCell>
+                    <TableCell className={c.headerCell}>Ilość</TableCell>
+                    <TableCell className={c.headerCell}>Jm</TableCell>
+                    <TableCell className={c.headerCell}>Cena</TableCell>
+                    <TableCell className={c.headerCell}>Wartość</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
                 {rows && rows.map((row: any) => {
                     return (
-                        <TableRow key={row.ean} hover={true} onClick={this.selectRow(row.id).bind(this)} selected={this.state.selectedId == row.id}>
-                            <TableCell className={classes.cell}>{row.id + "."}</TableCell>
-                            <TableCell component="th" scope="row">{row.ean}</TableCell>
-                            <TableCell className={classes.cell}>{row.name}</TableCell>
-                            <TableCell className={classes.cell}>{row.quantity}</TableCell>
-                            <TableCell className={classes.cell}>{row.unit}</TableCell>
-                            <TableCell className={classes.cell}>{row.price}</TableCell>
-                            <TableCell className={classes.cell}>{row.value}</TableCell>
+                        <TableRow key={row.id} hover={true} onClick={this.selectRow(row.id).bind(this)} selected={this.props.selectedReceiptItem == row.id}>
+                            <TableCell className={c.cell}>{row.ordinalNumber + "."}</TableCell>
+                            <TableCell className={c.cell} component="th" scope="row">{row.ean}</TableCell>
+                            <TableCell className={c.cell}>{row.name}</TableCell>
+                            <TableCell className={c.cell}>{row.quantity}</TableCell>
+                            <TableCell className={c.cell}>{row.unit}</TableCell>
+                            <TableCell className={c.cell}>{row.price}</TableCell>
+                            <TableCell className={c.cell}>{row.value}</TableCell>
                         </TableRow>
                     );
                 })}
@@ -85,4 +94,19 @@ class ReceiptDetails extends React.Component<any, ReceiptDetailsState> {
     }
 }
 
-export default withStyles(styles)(ReceiptDetails)
+const mapStateToProps = (store: IRootState) => ({
+    selectedReceiptItem: store.receipt.selectedReceiptItem
+});
+
+const mapDispatchToProps = { selectReceiptItem };
+
+type StateProps = ReturnType<typeof mapStateToProps>;
+type DispatchProps = typeof mapDispatchToProps;
+type ReceiptDetailsProps = StyledComponentProps & StateProps & DispatchProps & BaseProps;
+export default compose<ReceiptDetailsProps, BaseProps>(
+    withStyles(styles),
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )
+)(ReceiptDetails);

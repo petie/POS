@@ -18,7 +18,7 @@ namespace POS.Controllers
 
         [HttpPost]
         [Description("Start a new receipt and return its Id")]
-        public ActionResult<int> CreateReceipt()
+        public ActionResult<Receipt> CreateReceipt()
         {
             return _receiptService.Create();
         }
@@ -32,28 +32,28 @@ namespace POS.Controllers
 
         [HttpPost("{ean}")]
         [Description("Add a new line item by EAN code")]
-        public ActionResult<ReceiptItem> Add(string ean)
+        public ActionResult<Receipt> Add(string ean)
         {
             return _receiptService.Add(ean);
         }
 
         [HttpDelete("{receiptId}/{receiptItemId}")]
         [Description("Remove a receipt item by it's Id from a given receipt")]
-        public ActionResult<bool> Remove(int receiptId, int receiptItemId)
+        public ActionResult<Receipt> Remove(int receiptId, int receiptItemId)
         {
             return _receiptService.Remove(receiptId, receiptItemId);
         }
 
         [HttpDelete("{receiptId}")]
         [Description("Delete the whole receipt")]
-        public ActionResult<bool> Delete(int receiptId)
+        public ActionResult<Receipt> Delete(int receiptId)
         {
             return _receiptService.Delete(receiptId);
         }
 
         [HttpPost("change")]
         [Description("Change the quantity of a given item on the receipt")]
-        public ActionResult<ReceiptItem> ChangeQuantity([FromBody] ChangeQuantityRequest request)
+        public ActionResult<Receipt> ChangeQuantity([FromBody] ChangeQuantityRequest request)
         {
             return _receiptService.ChangeQuantity(request.Id, request.Quantity);
         }

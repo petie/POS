@@ -52,7 +52,7 @@ namespace POS
             // Register repos
             services.AddTransient<IShiftRepository, ShiftRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
-            services.AddTransient<IFiscalGateway, FiscalGateway>();
+            services.AddSingleton<IFiscalGateway, FiscalGateway>();
             services.AddTransient<IPaymentRepository, PaymentRepository>();
             services.AddTransient<IReceiptRepository, ReceiptRepository>();
         }
@@ -71,7 +71,9 @@ namespace POS
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseCors();
+            app.UseCors(builder => builder.AllowAnyOrigin()
+                                .AllowAnyMethod()
+                                .AllowAnyHeader());
             app.UseSwagger();
             app.UseSwaggerUi3();
 

@@ -1,7 +1,10 @@
 ﻿import React from "react";
-import { Grid, withStyles, Theme, createStyles } from "@material-ui/core";
+import { Grid, withStyles, Theme, createStyles, StyledComponentProps } from "@material-ui/core";
 import ReceiptDetails from "./ReceiptDetails";
 import ReceiptSummary from "./ReceiptSummary";
+import { IRootState } from "../Reducers/Index";
+import { compose } from "recompose";
+import { connect } from "react-redux";
 
 const styles = (theme: Theme) => createStyles({
     summaryGrid: {
@@ -15,117 +18,11 @@ const styles = (theme: Theme) => createStyles({
         backgroundColor: "white"
     }
 });
-const rows = [
-    {
-        id: 1,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    },
-    {
-        id: 2,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    },
-    {
-        id: 3,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    },
-    {
-        id: 4,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    },
-    {
-        id: 5,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    },
-    {
-        id: 6,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    }
-    ,
-    {
-        id: 7,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    }
-    ,
-    {
-        id: 8,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    }
-    ,
-    {
-        id: 9,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    }
-    ,
-    {
-        id: 10,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    }
-    ,
-    {
-        id: 11,
-        name: "Test",
-        price: "10,99 zł",
-        value:  "109,90 zł",
-        unit:"szt",
-        quantity: "10",
-        ean: "1234567890123"
-    }
-]
 
 type ReceiptViewState = {
     selectedEan: string;
 }
-class ReceiptView extends React.Component<any, ReceiptViewState> {
+class ReceiptView extends React.Component<ReceiptViewProps, ReceiptViewState> {
     constructor(props: any){
         super(props);
         this.state = {
@@ -134,15 +31,31 @@ class ReceiptView extends React.Component<any, ReceiptViewState> {
     }
     render() {
         const { classes } = this.props;
+        const c = classes || {};
         return <Grid container >
-            <Grid item className={classes.detailsGrid} md={9}>
-                <ReceiptDetails rows={rows}/>
+            <Grid item className={c.detailsGrid} md={9}>
+                <ReceiptDetails rows={this.props.items}/>
             </Grid>
-            <Grid item md={3} className={classes.summaryGrid}>
-                <ReceiptSummary receiptTotal="100,00zł"/>
+            <Grid item md={3} className={c.summaryGrid}>
+                <ReceiptSummary receiptTotal={this.props.receiptTotal}/>
             </Grid>
         </Grid>
     }
 }
 
-export default withStyles(styles)(ReceiptView);
+const mapDispatchToProps = {  };
+
+const mapStateToProps = (store: IRootState) => ({
+    ...store.receipt
+});
+
+type StateProps = ReturnType<typeof mapStateToProps>;
+type DispatchProps = typeof mapDispatchToProps;
+type ReceiptViewProps = StyledComponentProps & StateProps & DispatchProps;
+export default compose<ReceiptViewProps, {}>(
+    withStyles(styles),
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )
+)(ReceiptView);

@@ -17,15 +17,23 @@ namespace POS.Services
             this.shiftService = shiftService;
         }
 
-        public ReceiptItem Add(string ean)
+        public Receipt Add(string ean)
         {
             if (string.IsNullOrEmpty(ean))
                 throw new ArgumentNullException("Brak numeru EAN");
-            Receipt receipt = GetCurrentReceipt();
+            Receipt receipt;
+            try
+            {
+                receipt = GetCurrentReceipt();
+            }
+            catch (NoActiveReceiptException ea)
+            {
+                receipt = Create();
+            }
             Product product = productService.Get(ean);
             ReceiptItem receiptItem = receipt.AddItem(product);
             receiptRepository.Create(receiptItem);
-            return receiptItem;
+            return receipt;
         }
 
         private void EnsureCurrentReceiptDoesNotExist()
@@ -50,15 +58,15 @@ namespace POS.Services
                 throw new NoActiveShiftException();
         }
 
-        public virtual ReceiptItem ChangeQuantity(int receiptItemId, decimal quantity)
+        public virtual Receipt ChangeQuantity(int receiptItemId, decimal quantity)
         {
             Receipt receipt = GetCurrentReceipt();
             ReceiptItem result = receipt.ChangeQuantity(receiptItemId, quantity);
             receiptRepository.Save(receipt);
-            return result;
+            return receipt;
         }
 
-        public int Create()
+        public Receipt Create()
         {
             var shift = GetCurrentShift();
             EnsureCurrentReceiptDoesNotExist();
@@ -66,10 +74,12 @@ namespace POS.Services
             return receiptRepository.Create(receipt);
         }
 
-        public bool Delete(int receiptId)
+        public Receipt Delete(int receiptId)
         {
             Receipt receipt = receiptRepository.Get(receiptId);
-            return receipt.Cancel() && receiptRepository.Save(receipt);
+            receipt.Cancel();
+            receiptRepository.Save(receipt);
+            return receipt;
         }
 
         public PaymentInfo GetByReceiptId(int receiptId)
@@ -86,11 +96,13 @@ namespace POS.Services
             return currentReceipt;
         }
 
-        public bool Remove(int receiptId, int receiptItemId)
+        public Receipt Remove(int receiptId, int receiptItemId)
         {
 
             Receipt receipt = receiptRepository.Get(receiptId);
-            return receipt.RemoveItem(receiptItemId) && receiptRepository.Save(receipt);
+            receipt.RemoveItem(receiptItemId);
+            receiptRepository.Save(receipt);
+            return receipt;
         }
     }
 }

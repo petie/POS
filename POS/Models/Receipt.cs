@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 using System.Linq;
 
 namespace POS.Models
@@ -39,17 +40,30 @@ namespace POS.Models
         public int Id { get; set; }
         [NotMapped]
         public List<ReceiptItem> Items => AllItems.Where(i => !i.IsRemoved).ToList();
-
+        [JsonIgnore]
         public List<ReceiptItem> AllItems { get; set; }
 
         internal int GetNextOrdinalNumber() => 1 + Items?.Count ?? 0;
-
+        [JsonIgnore]
         public PaymentInfo Payment { get; set; }
+        [JsonIgnore]
         public int ShiftId { get; set; }
         [JsonIgnore]
         public Shift Shift { get; set; }
         public bool IsCancelled { get; set; }
         public bool IsClosed { get; set; }
+        public bool IsOpen => !IsClosed;
+        [JsonProperty("receiptTotal")]
+        public string TotalString => Total.ToString("C", CultureInfo.CreateSpecificCulture("pl-PL"));
+        [NotMapped]
+        public bool CanRemoveItem => Items.Any() && IsOpen;
+        [NotMapped]
+        public bool CanChangeQuantity => Items.Any() && IsOpen;
+        [NotMapped]
+        public bool CanPay => !Payment?.IsPayed ?? true;
+        [NotMapped]
+        public bool CanCancelReceipt => Items.Any() && IsOpen;
+        [JsonIgnore]
         public decimal Total => Items.Where(i => !i.IsRemoved).Sum(i => i.Value);
         public DateTime DateCreated { get; set; }
         public DateTime DateModified { get; set; }

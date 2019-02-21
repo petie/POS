@@ -14,10 +14,10 @@ namespace POS.DataAccess
         //private readonly PosSettings settings;
         private IFiscalDriver posnet;
 
-        public FiscalGateway(IFiscalDriver posnet, PosnetSettings settings)
+        public FiscalGateway(IFiscalDriver posnet, PosSettings settings)
         {
             this.posnet = posnet;
-            posnet.Setup(settings);
+            posnet.Setup(settings?.FiscalPrinter?.GetPosnetSettings());
             posnet.OperatorId = "Targi";
             posnet.Open();
             Debug.WriteLine("Opened connection");

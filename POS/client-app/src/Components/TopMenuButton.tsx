@@ -4,6 +4,7 @@ import React from "react";
 type TopMenuButtonProps = WithStyles & {
     text: string;
     onClick?: (event:any) => void;
+    disabled?: boolean;
 }
 const styles = (theme: Theme) => createStyles({
     button: {
@@ -23,6 +24,7 @@ class TopMenuButton extends React.Component<TopMenuButtonProps> {
           size="large"
           className={classes.button}
           onClick={this.props.onClick}
+          disabled={this.props.disabled}
         >
           <Grid container>
             <Grid item md={12}>

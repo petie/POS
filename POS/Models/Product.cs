@@ -1,4 +1,6 @@
-﻿namespace POS.Models
+﻿using Newtonsoft.Json;
+
+namespace POS.Models
 {
     public class Product
     {
@@ -7,9 +9,12 @@
         public string Name { get; set; }
         public decimal Price { get; set; }
         public string Unit { get; set; }
+        [JsonIgnore]
         public Tax Tax { get; set; }
+        [JsonIgnore]
         public int TaxId { get; set; }
-
+        [JsonProperty("tax")]
+        public string TaxValue => (Tax?.Value.ToString() ?? "NP") + "%";
         /// <summary>
         /// Constructor used for testing
         /// </summary>

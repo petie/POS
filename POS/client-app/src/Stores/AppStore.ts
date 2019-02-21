@@ -1,20 +1,18 @@
 import { Store, createStore, applyMiddleware, compose } from "redux";
+//import { composeWithDevTools } from 'redux-devtools-extension';
 import {AppState} from "../State/AppState";
-import promiseMiddleware from 'redux-promise-middleware';
+import promise from 'redux-promise-middleware'
+import logger from "redux-logger";
 import thunk from 'redux-thunk';
 import rootReducer, { IRootState } from "../Reducers/Index";
 
-const defaultMiddlewares = [
-    thunk,
-    promiseMiddleware()
-  ];
+// const defaultMiddlewares = [
+//     thunk,
+//     promise,
+//     logger
+//   ];
 
-const composedMiddlewares = (middlewares: any) =>
-  process.env.NODE_ENV === 'development'
-    ? compose(
-        applyMiddleware(...defaultMiddlewares, ...middlewares)
-      )
-    : compose(applyMiddleware(...defaultMiddlewares, ...middlewares));
+// const composedMiddlewares = (middlewares: any) => compose(applyMiddleware(...defaultMiddlewares, ...middlewares))
 
-const AppStore = (initialState?: IRootState, middlewares: any = []) => createStore(rootReducer, initialState, composedMiddlewares(middlewares))
+const AppStore = (initialState?: IRootState) => createStore(rootReducer, initialState, applyMiddleware(promise(), logger, thunk))
 export default AppStore;

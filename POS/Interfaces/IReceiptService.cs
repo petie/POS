@@ -4,12 +4,12 @@ namespace POS.Services
 {
     public interface IReceiptService
     {
-        int Create();
-        ReceiptItem Add(string ean);
-        bool Remove(int receiptId, int receiptItemId);
-        bool Delete(int receiptId);
+        Receipt Create();
+        Receipt Add(string ean);
+        Receipt Remove(int receiptId, int receiptItemId);
+        Receipt Delete(int receiptId);
         Receipt GetCurrentReceipt();
         PaymentInfo GetByReceiptId(int receiptId);
-        ReceiptItem ChangeQuantity(int receiptItemId, decimal quantity);
+        Receipt ChangeQuantity(int receiptItemId, decimal quantity);
     }
 }

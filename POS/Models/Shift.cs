@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,14 +21,16 @@ namespace POS.Models
         public DateTime? EndDate { get; set; }
         public decimal StartMoney { get; set; }
         public decimal StartDeposit { get; set; }
-        public decimal NumberOfReceipts => Receipts?.Count(r => !r.IsCancelled) ?? 0;
+        public int NumberOfReceipts => Receipts?.Count(r => !r.IsCancelled) ?? 0;
         public bool IsClosed { get { return EndDate != null; } }
         public bool IsOpen { get { return StartDate != null && !IsClosed; } }
         public int CancelledReceiptsCount => Receipts?.Count(r => r.IsCancelled) ?? 0;
         public int RemovedItemsCount => Receipts?.Sum(r => r.AllItems.Count(i => i.IsRemoved)) ?? 0;
+        [JsonIgnore]
         public IEnumerable<Receipt> Receipts { get; set; }
-        public decimal EndMoney => StartMoney + StartDeposit + Receipts?.Sum(r => r.Total) ?? 0;
-
+        public decimal EndMoney => StartMoney + StartDeposit + Sales;
+        public bool IsCreated => true;
+        public decimal Sales => Receipts?.Sum(r => r.Total) ?? 0;
         public Shift(decimal startMoney)
         {
             StartMoney = startMoney;
