@@ -9,7 +9,8 @@ const initialState = {
     amountPayed: 0,
     change: 0,
     isLoading: false,
-    canPay: false
+    canPay: false,
+    id: 0
 }
 const ACTIONS = {
     PAYDIALOG_SHOW: "payment/PAYDIALOG_SHOW",
@@ -22,9 +23,13 @@ export type PaymentState = Readonly<typeof initialState>;
 export const payShowDialog = createAction(ACTIONS.PAYDIALOG_SHOW, (id: number) => { return Axios.post(config.apiAddress + "api/payment")});
 export const payCancelDialog = createAction(ACTIONS.PAYDIALOG_CANCEL);
 export const paySubmit = (id: number, amount: number) => (dispatch, getState) => {
-    Axios.post(config.apiAddress + "api/payment/pay", {id, amount}).then(response => {
+    Axios.post(config.apiAddress + "api/payment/pay", {paymentId:id, amount}).then(response => {
         dispatch({
             type: "receipt/RESET"
+        });
+
+        dispatch({
+            type: SUCCESS(ACTIONS.PAYDIALOG_SUBMIT)
         });
     })
 }

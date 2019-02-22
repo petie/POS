@@ -41,7 +41,7 @@ namespace POS.Services
             PaymentInfo info = paymentRepository.GetCurrent();
             if (info.Pay(payment))
             {
-                paymentRepository.Save(info);
+                paymentRepository.Update(info);
                 fiscalService.Print(info.Receipt);
                 return info;
             }

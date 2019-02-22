@@ -6,6 +6,7 @@ import './fonts.css';
 import './App.css';
 import { Provider } from 'react-redux';
 import initStore from './Stores/AppStore';
+import {IntlProvider} from 'react-intl'
 
 const store = initStore();
 
@@ -20,9 +21,11 @@ class App extends Component<any, any> {
     return (
         <div className={classes.root}>
         <Provider store={store}>
+        <IntlProvider locale="pl" defaultLocale="pl">
             <Router>
                 <Route path="/" component={MainView} />
             </Router>
+            </IntlProvider>
             </Provider>
       </div>
     );

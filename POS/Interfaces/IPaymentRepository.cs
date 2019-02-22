@@ -6,5 +6,7 @@ namespace POS.Services
     {
         void Save(PaymentInfo info);
         PaymentInfo GetCurrent();
+
+        void Update(PaymentInfo info);
     }
 }

@@ -25,7 +25,7 @@ namespace POS.DataAccess
             PosnetPayment result = new PosnetPayment
             {
                 Name = "gotówka",
-                Type = 1,
+                Type = 0,
                 Value = (long)(p.AmountPayed * 100)
             };
             return result;

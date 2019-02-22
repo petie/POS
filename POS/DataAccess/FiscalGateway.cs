@@ -44,7 +44,7 @@ namespace POS.DataAccess
                 posnet.AddItem(item.ToReceiptItem());
             }
             posnet.AddPayment(receipt.Payment.ToPayment());
-            posnet.Close();
+            posnet.CloseReceipt();
         }
     }
 }
