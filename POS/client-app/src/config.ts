@@ -1,3 +1,3 @@
 export const config = {
-    apiAddress: "http://localhost:5000/"
+    apiAddress: process.env.NODE_ENV === "production" ? "/" : "http://localhost:5000/"
 }

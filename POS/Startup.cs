@@ -83,14 +83,21 @@ namespace POS
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
-            {
-                DarkTheme = true,
-                AutoHideMenuBar = true,
-                Title = "POS",
-                Fullscreen = true
-            }));
             applicationLifetime.ApplicationStopping.Register(() => CloseConnection(app.ApplicationServices));
+            ElectronBootstrap();
+        }
+
+        public async void ElectronBootstrap()
+        {
+            var prefs = new BrowserWindowOptions
+            {
+                Width = 1152,
+                Height = 864,
+                Show = false,
+                WebPreferences = new WebPreferences { WebSecurity = false }
+            };
+            var browserWindow = await Electron.WindowManager.CreateWindowAsync(prefs);
+            browserWindow.OnReadyToShow += () => browserWindow.Show();
         }
 
         private void CloseConnection(IServiceProvider applicationServices)
