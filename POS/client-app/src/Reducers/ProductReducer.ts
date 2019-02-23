@@ -5,14 +5,14 @@ import { createAction } from 'redux-actions';
 import { FETCHING, FAILURE, SUCCESS } from "../Actions/Utils";
 import { ProductApi } from "../API";
 
-const Api = new ProductApi({});
 const initialState = {
     products: [] as Product[],
     showProductDialog: false,
     isLoading: false,
     errorMessage: "",
     selectedProduct: "",
-    canSearchProduct: true
+    canSearchProduct: true,
+    searchEan: ""
 }
 
 export const ACTIONS = {
@@ -49,7 +49,8 @@ export default (state: ProductState = initialState, action: any): ProductState =
         case ACTIONS.SHOW_PRODUCTS_DIALOG:
             return {
                 ...state,
-                showProductDialog: true
+                showProductDialog: true,
+                searchEan: ""
             }
             break;
         case ACTIONS.CLOSE_PRODUCTS_DIALOG:

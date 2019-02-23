@@ -34,6 +34,7 @@ class BottomMenu extends React.Component<BottomMenuProps, BottomMenuState> {
     }
     handlePickProduct() {
         this.props.addItemToReceipt(this.state.name);
+        this.setState({name:""})
     }
     handleChange(name: string) {
         return (event: any) => {
@@ -51,6 +52,7 @@ class BottomMenu extends React.Component<BottomMenuProps, BottomMenuState> {
             <Grid container>
                 <Grid item md={8}>
                     <TextField
+                        autoFocus={true}
                         fullWidth
                         id="standard-name"
                         label="Dodaj produkt"
@@ -59,6 +61,7 @@ class BottomMenu extends React.Component<BottomMenuProps, BottomMenuState> {
                         InputProps={{ className: c.inputField }}
                         InputLabelProps={{ className: c.label }}
                         value={this.state.name}
+                        disabled={!this.props.shift.isOpen}
                         onKeyPress={(event) => this.handleEnterKey(event)}
                         onChange={(event) => this.handleEanChange(event)}
                         margin="normal"
@@ -69,7 +72,7 @@ class BottomMenu extends React.Component<BottomMenuProps, BottomMenuState> {
     }
     handleEnterKey(event: React.KeyboardEvent<HTMLDivElement>): void {
         if (event.key === "Enter") {
-            event.preventDefault();
+            //event.preventDefault();
             this.handlePickProduct();
         }
     }
@@ -79,8 +82,9 @@ class BottomMenu extends React.Component<BottomMenuProps, BottomMenuState> {
         } as BottomMenuState);
     }
 }
-const mapStateToProps = () => ({
-
+const mapStateToProps = (store: IRootState) => ({
+    ...store.product,
+    shift: store.shift
 });
 const mapDispatchToProps = { addItemToReceipt };
 

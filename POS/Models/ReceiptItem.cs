@@ -75,10 +75,11 @@ namespace POS.Models
         [NotMapped]
         public string Unit => Product?.Unit;
         public int ProductId { get; set; }
+        [Column(TypeName = "decimal(13, 4)")]
         public decimal Quantity { get; set; }
         [NotMapped]
         [JsonIgnore]
-        public decimal Value => Quantity * Price;
+        public decimal Value => Math.Round(Quantity * Price,2);
         [JsonProperty("value")]
         public string ValueString => Value.ToString("C", CultureInfo.CreateSpecificCulture("pl-PL"));
         public bool IsRemoved { get; set; }

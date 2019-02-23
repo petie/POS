@@ -29,8 +29,12 @@ class ChangeQuantity extends React.Component<ChangeQuantityProps, ChangeQuantity
         this.state = {quantity:1};
     }
     handleTextChange(event: any): void {
-        const q = Number(event.target.value);
-        if (!isNaN(q)) this.setState({ quantity: q });
+        if (event.target.value === "")
+            this.setState({ quantity: event.target.value});
+        else {
+            const q = Number(event.target.value);
+            if (!isNaN(q)) this.setState({ quantity: q });
+        }
     }
     handleCancel(event?: React.MouseEvent<HTMLElement, MouseEvent>): void {
         this.props.changeQuantityCancel();

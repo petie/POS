@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using POS.DataAccess;
 
 namespace POS.Migrations
 {
     [DbContext(typeof(PosDbContext))]
-    partial class PosDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190222115700_UnusedColumns")]
+    partial class UnusedColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,14 +27,11 @@ namespace POS.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(13, 4)");
+                    b.Property<decimal>("Amount");
 
-                    b.Property<decimal>("AmountPayed")
-                        .HasColumnType("decimal(13, 4)");
+                    b.Property<decimal>("AmountPayed");
 
-                    b.Property<decimal>("Change")
-                        .HasColumnType("decimal(13, 4)");
+                    b.Property<decimal>("Change");
 
                     b.Property<DateTime>("DateCreated");
 
@@ -112,8 +111,7 @@ namespace POS.Migrations
 
                     b.Property<int>("ProductId");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(13, 4)");
+                    b.Property<decimal>("Quantity");
 
                     b.Property<int>("ReceiptId");
 

@@ -10,8 +10,11 @@ namespace POS.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        [Column(TypeName = "decimal(13, 4)")]
         public decimal Amount { get; set; }
+        [Column(TypeName = "decimal(13, 4)")]
         public decimal AmountPayed { get; set; }
+        [Column(TypeName = "decimal(13, 4)")]
         public decimal Change { get; set; }
         public bool IsPayed { get; set; }
         [JsonIgnore]

@@ -3,8 +3,7 @@ import React from "react";
 import { compose } from "recompose";
 import { withStyles, StyledComponentProps, createStyles, Theme, Dialog, DialogTitle, DialogContent, Grid, TextField, Button, Paper, Typography } from "@material-ui/core";
 import { connect } from "react-redux";
-import MUIDataTable from "mui-datatables";
-import { changeQuantitySubmit, changeQuantityCancel, deleteReceiptSubmit, deleteReceiptCancel } from "../Reducers/ReceiptReducer";
+import { deleteReceiptSubmit, deleteReceiptCancel } from "../Reducers/ReceiptReducer";
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -19,11 +18,12 @@ const styles = (theme: Theme) =>
         }
     });
 
-type ChangeQuantityState = {
+type DeleteReceiptState = {
     quantity: number;
 };
 
-class ChangeQuantity extends React.Component<ChangeQuantityProps, ChangeQuantityState> {
+
+class DeleteReceipt extends React.Component<DeleteReceiptProps, DeleteReceiptState> {
     constructor(props){
         super(props);
         this.state = {quantity:1};
@@ -55,7 +55,7 @@ class ChangeQuantity extends React.Component<ChangeQuantityProps, ChangeQuantity
         const { classes } = this.props;
         const c = classes || {};
         return (
-            <Dialog open={this.props.showReceiptCancelDialog} maxWidth={false}>
+            <Dialog open={this.props.showReceiptCancelDialog} maxWidth={false} onKeyPress={event => this.handleEnterKey(event)}>
                 <DialogContent>
                     <Grid container className={c.grid}>
                     <Typography variant="h4">Czy na pewno usunąć paragon?</Typography>
@@ -86,11 +86,11 @@ const mapDispatchToProps = { deleteReceiptSubmit, deleteReceiptCancel };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = typeof mapDispatchToProps;
-type ChangeQuantityProps = StyledComponentProps & StateProps & DispatchProps;
-export default compose<ChangeQuantityProps, {}>(
+type DeleteReceiptProps = StyledComponentProps & StateProps & DispatchProps;
+export default compose<DeleteReceiptProps, {}>(
     withStyles(styles),
     connect(
         mapStateToProps,
         mapDispatchToProps
     )
-)(ChangeQuantity);
+)(DeleteReceipt);

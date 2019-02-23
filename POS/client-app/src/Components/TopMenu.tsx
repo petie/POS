@@ -8,11 +8,8 @@ import { changeQuantityShow, deleteReceiptShow, removeItemFromReceipt, getCurren
 import { connect } from "react-redux";
 import { IRootState } from "../Reducers/Index";
 import { productDialogShow } from "../Reducers/ProductReducer";
-import ProductList from "./ProductList";
-import ChangeQuantity from "./ChangeQuantity";
-import DeleteReceipt from "./DeleteReceipt";
-import PaymentView from "./PaymentView";
 import { payShowDialog } from "../Reducers/PaymentReducer";
+import { HotKeys } from "react-hotkeys";
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -29,7 +26,15 @@ const styles = (theme: Theme) =>
 const initialState = {
     selectedItemId: null
 };
-
+type TopMenuHandlers = {
+    handleProductList: any;
+    handleChangeQuantity: any;
+    handlePay: any;
+    handleRemoveReceiptItem: any;
+    handleCancelReceipt: any;
+    handleCloseShift: any;
+    handleOpenShift: any;
+}
 type TopMenuState = typeof initialState;
 
 class TopMenu extends React.Component<TopMenuProps, TopMenuState> {
@@ -37,62 +42,70 @@ class TopMenu extends React.Component<TopMenuProps, TopMenuState> {
         super(props);
         this.props.getCurrentShift();
         this.props.getCurrentReceipt();
+
     }
-    handleProductList = event => {
-        this.props.productDialogShow();
-    };
-    handleChangeQuantity = (event: any) => {
-        this.props.changeQuantityShow();
-    };
-    handlePay = (event: any) => {
-        this.props.payShowDialog(this.props.receipt.id);
-    };
-    handleRemoveReceiptItem = (event: any) => {
-        this.props.removeItemFromReceipt(this.props.receipt.id, this.props.receipt.selectedReceiptItem || 1);
-    };
-    handleCancelRecceipt = (event: any) => {
-        this.props.deleteReceiptShow();
-    };
-    handleCloseShift = (event: any) => {
-        this.props.endShiftShow();
-    };
-    handleOpenShift = (event: any) => {
-        if (this.props.shift.isCreated)
-            this.props.startShiftExistingShow();
-        else
-            this.props.startShiftShow();
-    };
+    // handleProductList = event => {
+    //     if (this.props.shift.isOpen)
+    //         this.props.productDialogShow();
+    // };
+    // handleChangeQuantity = (event: any) => {
+    //     if (this.props.canChangeQuantity) {
+    //         event.preventDefault();
+    //         this.props.changeQuantityShow();
+    //     }
+    // };
+    // handlePay = (event: any) => {
+    //     if (this.props.canPay)
+    //         this.props.payShowDialog(this.props.receipt.id);
+    // };
+    // handleRemoveReceiptItem = (event: any) => {
+    //     if (this.props.canRemoveItem) {
+    //         event.preventDefault();
+    //         this.props.removeItemFromReceipt(this.props.receipt.id, this.props.receipt.selectedReceiptItem || 1);
+    //     }
+    // };
+    // handleCancelReceipt = (event: any) => {
+    //     if (this.props.canCancelReceipt)
+    //         this.props.deleteReceiptShow();
+    // };
+    // handleCloseShift = (event: any) => {
+    //     if (this.props.shift.canCloseShift)
+    //         this.props.endShiftShow();
+    // };
+    // handleOpenShift = (event: any) => {
+    //     if (this.props.shift.canOpenShift)
+    //         if (this.props.shift.isCreated)
+    //             this.props.startShiftExistingShow();
+    //         else
+    //             this.props.startShiftShow();
+    // };
     render() {
         let { classes, shift } = this.props;
         classes = classes || {};
         return (
             <Grid container spacing={8} className={classes.mainGrid}>
-                <TopMenuButton text="Znajdź produkt" disabled={!shift.isOpen} onClick={this.handleProductList}>
+                <TopMenuButton text="Znajdź produkt [Ins]" disabled={!shift.isOpen} onClick={this.props.handleProductList}>
                     <Search className={classes.icon} />
                 </TopMenuButton>
-                <TopMenuButton text="Zmień ilość" disabled={!this.props.canChangeQuantity} onClick={this.handleChangeQuantity}>
+                <TopMenuButton text="Zmień ilość [ * ]" disabled={!this.props.canChangeQuantity} onClick={this.props.handleChangeQuantity}>
                     <PlusOne className={classes.icon} />
                 </TopMenuButton>
-                <TopMenuButton text="Zapłata" disabled={!this.props.canPay} onClick={this.handlePay}>
+                <TopMenuButton text="Zapłata [ / ]" disabled={!this.props.canPay} onClick={this.props.handlePay}>
                     <CheckCircle className={classes.icon} />
                 </TopMenuButton>
-                <TopMenuButton text="Usuń pozycję" disabled={!this.props.canRemoveItem} onClick={this.handleRemoveReceiptItem}>
+                <TopMenuButton text="Usuń pozycję [ - ]" disabled={!this.props.canRemoveItem} onClick={this.props.handleRemoveReceiptItem}>
                     <RemoveShoppingCart className={classes.icon} />
                 </TopMenuButton>
-                <TopMenuButton text="Anuluj paragon" disabled={!this.props.canCancelReceipt} onClick={this.handleCancelRecceipt}>
+                <TopMenuButton text="Anuluj paragon [Alt+Del]" disabled={!this.props.canCancelReceipt} onClick={this.props.handleCancelReceipt}>
                     <Cancel className={classes.icon} />
                 </TopMenuButton>
                 <TopMenuButton
                     text={shift.isOpen ? "Zamknij zmianę" : "Otwórz zmianę"}
                     disabled={shift.isOpen ? !shift.canCloseShift : !shift.canOpenShift}
-                    onClick={shift.isOpen ? this.handleCloseShift : this.handleOpenShift}
+                    onClick={shift.isOpen ? this.props.handleCloseShift : this.props.handleOpenShift}
                 >
                     <ExitToApp className={classes.icon} />
                 </TopMenuButton>
-                <ProductList />
-                <ChangeQuantity />
-                <DeleteReceipt />
-                <PaymentView />
             </Grid>
         );
     }
@@ -112,8 +125,8 @@ const mapDispatchToProps = { payShowDialog, productDialogShow, deleteReceiptShow
 
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = typeof mapDispatchToProps;
-type TopMenuProps = StyledComponentProps & StateProps & DispatchProps;
-export default compose<TopMenuProps, {}>(
+type TopMenuProps = StyledComponentProps & StateProps & DispatchProps & TopMenuHandlers;
+export default compose<TopMenuProps, TopMenuHandlers>(
     withStyles(styles),
     connect(
         mapStateToProps,

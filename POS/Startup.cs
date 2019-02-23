@@ -84,20 +84,20 @@ namespace POS
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
             applicationLifetime.ApplicationStopping.Register(() => CloseConnection(app.ApplicationServices));
-            ElectronBootstrap();
+            ElectronBootstrap(app.ApplicationServices);
         }
 
-        public async void ElectronBootstrap()
+        public async void ElectronBootstrap(IServiceProvider applicationServices)
         {
             var prefs = new BrowserWindowOptions
             {
-                Width = 1152,
-                Height = 864,
+                Fullscreen = true,
                 Show = false,
                 WebPreferences = new WebPreferences { WebSecurity = false }
             };
             var browserWindow = await Electron.WindowManager.CreateWindowAsync(prefs);
             browserWindow.OnReadyToShow += () => browserWindow.Show();
+            browserWindow.OnClose += () => CloseConnection(applicationServices);
         }
 
         private void CloseConnection(IServiceProvider applicationServices)

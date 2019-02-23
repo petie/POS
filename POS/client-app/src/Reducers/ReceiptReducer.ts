@@ -8,7 +8,7 @@ import Product from "../Models/Product";
 
 const initialState = {
     items: [] as ReceiptItem[],
-    selectedReceiptItem: null,
+    selectedReceiptItem: -1,
     selectedReceiptItemQuantity: 1,
     receiptTotal: "0 zł",
     isLoading: false,
@@ -21,7 +21,8 @@ const initialState = {
     isClosed: false,
     isOpen: false,
     showQuantityDialog: false,
-    showReceiptCancelDialog: false
+    showReceiptCancelDialog: false,
+    total: 0
 };
 
 const ACTIONS = {
@@ -36,6 +37,8 @@ const ACTIONS = {
     SELECTRECEIPTITEM: "receipt/SELECTRECEIPTITEM",
     CHANGEQUANTITY_CANCEL: "receipt/CHANGEQUANTITY_CANCEL",
     DELETERECEIPT_CANCEL: "receipt/DELETERECEIPT_CANCEL",
+    SELECTNEXTRECEIPTITEM: "receipt/SELECTNEXTRECEIPTITEM",
+    SELECTPREVRECEIPTITEM: "receipt/SELECTPREVRECEIPTITEM",
     RESET: "receipt/RESET"
 };
 export const deleteReceiptCancel = createAction(ACTIONS.DELETERECEIPT_CANCEL);
@@ -43,7 +46,8 @@ export const deleteReceiptShow = createAction(ACTIONS.DELETERECEIPT_SHOW);
 export const changeQuantityShow = createAction(ACTIONS.CHANGEQUANTITY_SHOW);
 export const changeQuantityCancel = createAction(ACTIONS.CHANGEQUANTITY_CANCEL);
 export const selectReceiptItem = createAction(ACTIONS.SELECTRECEIPTITEM, (id: number) => id);
-
+export const selectNextReceiptItem = createAction(ACTIONS.SELECTNEXTRECEIPTITEM);
+export const selectPrevReceiptItem = createAction(ACTIONS.SELECTPREVRECEIPTITEM);
 export const createReceiptSubmit = createAction(ACTIONS.CREATERECEIPT_SUBMIT, () => {
     return axios.post(config.apiAddress + "api/receipt");
 });
@@ -53,9 +57,8 @@ export const getCurrentReceipt = createAction(ACTIONS.GETCURRENTRECEIPT, () => {
 export const removeItemFromReceipt = createAction(ACTIONS.REMOVE_ITEM, (receiptId: number, receiptItemId: number) => {
     return axios.delete(config.apiAddress + "api/receipt/" + receiptId + "/" + receiptItemId);
 });
-// export const addItemToReceipt = createAction(ACTIONS.ADD_ITEM, (ean: string) => {
-//     return axios.post(config.apiAddress + "api/receipt/" + ean);
-// });
+// export const addItemToReceipt = createAction(ACTIONS.ADD_ITEM, (ean: string)
+// => {     return axios.post(config.apiAddress + "api/receipt/" + ean); });
 export const addItemToReceipt = (ean: string) => (dispatch, getState: () => IRootState) => {
     var products = getState().product.products;
     var found =
@@ -63,63 +66,80 @@ export const addItemToReceipt = (ean: string) => (dispatch, getState: () => IRoo
             return element.ean == ean;
         }) > -1;
     if (found) {
-        //     axios.post(config.apiAddress + "api/receipt/" + ean).then()
-        // }
         dispatch({
             type: ACTIONS.ADD_ITEM,
             payload: axios.post(config.apiAddress + "api/receipt/" + ean)
         });
     } else {
-        dispatch({
-            type: "products/SHOW_PRODUCTS_DIALOG"
-        })
+        dispatch({ type: "products/SHOW_PRODUCTS_DIALOG" });
     }
 };
 export const deleteReceiptSubmit = createAction(ACTIONS.DELETERECEIPT_SUBMIT, (receiptId: number) => {
     return axios.delete(config.apiAddress + "api/receipt/" + receiptId);
 });
 export const changeQuantitySubmit = createAction(ACTIONS.CHANGEQUANTITY_SUBMIT, (id: number, quantity: number) => {
-    return axios.post(config.apiAddress + "api/receipt/change", { id: id, quantity: quantity });
+    return axios.post(config.apiAddress + "api/receipt/change", {
+        id: id,
+        quantity: quantity
+    });
 });
 
 export type ReceiptState = Readonly<typeof initialState>;
 
 export default (state: ReceiptState = initialState, action: any): ReceiptState => {
     switch (action.type) {
+        case ACTIONS.SELECTPREVRECEIPTITEM:
+            var selectedIndex = state.items.findIndex((item: ReceiptItem) => item.id === state.selectedReceiptItem);
+            var newIndex = selectedIndex;
+            if (selectedIndex > 0) newIndex--;
+            return {
+                ...state,
+                selectedReceiptItem: newIndex < 0 ? newIndex : state.items[newIndex].id
+            };
+            break;
+        case ACTIONS.SELECTNEXTRECEIPTITEM:
+            var selectedIndex = state.items.findIndex((item: ReceiptItem) => item.id === state.selectedReceiptItem);
+            var newIndex = selectedIndex;
+            if (selectedIndex < state.items.length - 1) newIndex++;
+            return {
+                ...state,
+                selectedReceiptItem: newIndex < 0 ? newIndex : state.items[newIndex].id
+            };
+            break;
         case ACTIONS.CHANGEQUANTITY_SHOW:
             const item = state.items.find((item: ReceiptItem) => {
-                return item.id == state.selectedReceiptItem
+                return item.id == state.selectedReceiptItem;
             });
             const q = item ? item.quantity : 1;
             return {
                 ...state,
                 showQuantityDialog: true,
                 selectedReceiptItemQuantity: q
-            }
-            case ACTIONS.RESET:
+            };
+        case ACTIONS.RESET:
             return {
                 ...initialState
-            }
-            case ACTIONS.DELETERECEIPT_SHOW:
+            };
+        case ACTIONS.DELETERECEIPT_SHOW:
             return {
                 ...state,
                 showReceiptCancelDialog: true
-            }
-            case ACTIONS.DELETERECEIPT_CANCEL:
+            };
+        case ACTIONS.DELETERECEIPT_CANCEL:
             return {
                 ...state,
                 showReceiptCancelDialog: false
-            }
+            };
         case ACTIONS.CHANGEQUANTITY_CANCEL:
             return {
                 ...state,
                 showQuantityDialog: false
-            }
+            };
         case ACTIONS.SELECTRECEIPTITEM:
             return {
                 ...state,
                 selectedReceiptItem: action.payload
-            }
+            };
         case SUCCESS(ACTIONS.DELETERECEIPT_SUBMIT):
             return {
                 ...initialState
@@ -153,8 +173,8 @@ export default (state: ReceiptState = initialState, action: any): ReceiptState =
                 selectedReceiptItem
             };
         case SUCCESS(ACTIONS.REMOVE_ITEM):
-        var receipt = action.payload.data as ReceiptState;
-        var selectedReceiptItem = receipt.items && receipt.items.length > 0 ? receipt.items[receipt.items.length - 1].id : null;
+            var receipt = action.payload.data as ReceiptState;
+            var selectedReceiptItem = receipt.items && receipt.items.length > 0 ? receipt.items[receipt.items.length - 1].id : null;
             return {
                 ...state,
                 ...action.payload.data,

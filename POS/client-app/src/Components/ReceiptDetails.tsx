@@ -3,7 +3,7 @@ import { Table, TableHead, TableRow, TableCell, TableBody, Theme, createStyles, 
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import { IRootState } from "../Reducers/Index";
-import { selectReceiptItem } from "../Reducers/ReceiptReducer";
+import { selectReceiptItem, selectNextReceiptItem, selectPrevReceiptItem } from "../Reducers/ReceiptReducer";
 import ReceiptItem from "../Models/ReceiptItem";
 
 const styles = (theme: Theme) => createStyles({
@@ -30,6 +30,7 @@ type BaseProps = {
 }
 
 class ReceiptDetails extends React.Component<ReceiptDetailsProps, ReceiptDetailsState> {
+    hot_keys: any;
     constructor(props: any){
         super(props);
         this.state = {
@@ -98,7 +99,7 @@ const mapStateToProps = (store: IRootState) => ({
     selectedReceiptItem: store.receipt.selectedReceiptItem
 });
 
-const mapDispatchToProps = { selectReceiptItem };
+const mapDispatchToProps = { selectReceiptItem, selectNextReceiptItem, selectPrevReceiptItem };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = typeof mapDispatchToProps;
